@@ -2,11 +2,10 @@ package com.backend_tpi.ms_contenedores.constants;
 
 public enum EstadoContenedor {
 
-    DISPONIBLE(1),
-    EN_TRANSITO(2),
-    EN_REPARACION(3),
-    EN_DEPOSITO(4),
-    FUERA_DE_SERVICIO(5);
+    ASIGNADO(1),
+    EN_VIAJE(2),
+    EN_DEPOSITO(3),
+    ENTREGADO(4);
 
     private final int id;
 
