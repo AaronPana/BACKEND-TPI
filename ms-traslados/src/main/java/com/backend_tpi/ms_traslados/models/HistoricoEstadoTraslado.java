@@ -19,7 +19,7 @@ public class HistoricoEstadoTraslado {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "ID_HISTORICO")
-  private long idHistorico;
+  private Long idHistorico;
 
   @Column(name = "FECHA_HORA_INICIO_ESTADO")
   private LocalDateTime fechaHoraInicioEstado;

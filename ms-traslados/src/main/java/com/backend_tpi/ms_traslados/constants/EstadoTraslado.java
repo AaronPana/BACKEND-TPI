@@ -1,24 +1,26 @@
 package com.backend_tpi.ms_traslados.constants;
 
+import java.util.Objects;
+
 public enum EstadoTraslado {
   SOLICITADO(1),
   PROGRAMADO(2),
   EN_TRANSITO(3),
   FINALIZADO(4);
 
-  private final int idEstadoTramo;
+  private final Integer idEstadoTramo;
 
-  EstadoTraslado(int idEstadoTramo) {
+  EstadoTraslado(Integer idEstadoTramo) {
     this.idEstadoTramo = idEstadoTramo;
   }
 
-  public int getId() {
+  public Integer getId() {
     return this.idEstadoTramo;
   }
 
-  public static EstadoTraslado fromId(int idEstadoTramo) {
+  public static EstadoTraslado fromId(Integer idEstadoTramo) {
     for (EstadoTraslado estado : values()) {
-      if (estado.getId() == idEstadoTramo) {
+      if (Objects.equals(estado.getId(), idEstadoTramo)) {
         return estado;
       }
     }
