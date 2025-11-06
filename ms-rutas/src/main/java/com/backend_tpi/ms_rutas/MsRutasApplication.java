@@ -7,7 +7,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class MsRutasApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(MsRutasApplication.class, args);
+
+        SpringApplication.run(MsRutasApplication.class, args);
 	}
 
 }

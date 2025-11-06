@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Table(name = "TRAMOS")
 @Data
 @NoArgsConstructor
-public class Tramos{
+public class Tramo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long idTramo;
@@ -31,11 +31,11 @@ public class Tramos{
     @Column(name = "FECHA_HORA_FIN_REAL")
     private LocalDateTime fechaHoraFinReal;
 
-    @Column(name = "COSTO_ESTIMADO",precision = 12, scale = 2)
-    private double costoEstimado;
+    @Column(name = "COSTO_ESTIMADO", columnDefinition = "DECIMAL(12,2)")
+    private Double costoEstimado;
 
-    @Column(name = "COSTO_REAL", precision = 12, scale = 2)
-    private double costoReal;
+    @Column(name = "COSTO_REAL", columnDefinition = "DECIMAL(12,2)")
+    private Double costoReal;
 
     @Column(name = "DIRECCION_ORIGEN", length = 200)
     private String direccionOrigen;
@@ -73,7 +73,7 @@ public class Tramos{
     private long idCiudadDestino;
 
 
-    public Tramos(long idTramo, LocalDateTime fechaHoraInicioEstimada, LocalDateTime fechaHoraFinEstimada, LocalDateTime fechaHoraInicioReal, LocalDateTime fechaHoraFinReal, double costoEstimado, double costoReal, String direccionOrigen, String direccionDestino, EstadoTramo estadoTramo, TipoTramo tipoTramo, String patenteCamion, long legajoTransportista, long idDepositoOrigen, long idDepositoDestino, long idTraslado, long idCiudadOrigen, long idCiudadDestino) {
+    public Tramo(long idTramo, LocalDateTime fechaHoraInicioEstimada, LocalDateTime fechaHoraFinEstimada, LocalDateTime fechaHoraInicioReal, LocalDateTime fechaHoraFinReal, double costoEstimado, double costoReal, String direccionOrigen, String direccionDestino, EstadoTramo estadoTramo, TipoTramo tipoTramo, String patenteCamion, long legajoTransportista, long idDepositoOrigen, long idDepositoDestino, long idTraslado, long idCiudadOrigen, long idCiudadDestino) {
         this.idTramo = idTramo;
         this.fechaHoraInicioEstimada = fechaHoraInicioEstimada;
         this.fechaHoraFinEstimada = fechaHoraFinEstimada;
