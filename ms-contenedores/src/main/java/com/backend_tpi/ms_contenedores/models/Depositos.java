@@ -17,25 +17,25 @@ public class Depositos {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long idDeposito;
+    private Long idDeposito;
 
     @Column(name = "NOMBRE", length = 200)
     private String nombre;
 
-    @Column(name = "COSTO_X_DIA", precision = 12, scale = 2)
-    private double costoXdia;
+    @Column(name = "COSTO_X_DIA", columnDefinition= "DECIMAL(12,2)")
+    private Double costoXdia;
 
-    @Column(name = "LATITUD", precision = 12, scale = 8)
-    private double latitud;
+    @Column(name = "LATITUD", columnDefinition= "DECIMAL(12,2)")
+    private Double latitud;
 
-    @Column(name = "LONGITUD", precision = 12, scale = 8)
-    private double longitud;
+    @Column(name = "LONGITUD", columnDefinition= "DECIMAL(12,2)")
+    private Double longitud;
 
     @Column(name = "DIRECCION", length = 300)
     private String direccion;
 
     @Column(name = "ID_CIUDAD")
-    private long idCiudad;
+    private Long idCiudad;
 
     public Depositos(long idDeposito, String nombre, double costoXdia, double latitud, double longitud, String direccion, long idCiudad) {
         this.idDeposito = idDeposito;

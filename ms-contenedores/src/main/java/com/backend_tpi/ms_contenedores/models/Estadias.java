@@ -19,7 +19,7 @@ public class Estadias {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long idEstadia;
+    private Long idEstadia;
 
     @Column(name = "FECHA_HORA_INICIO_ESTIMADA")
     private LocalDateTime fechaHoraInicioEstimada;
@@ -33,20 +33,20 @@ public class Estadias {
     @Column(name = "FECHA_HORA_FIN_REAL")
     private LocalDateTime fechaHoraFinReal;
 
-    @Column(name = "COSTO_ESTIMADO", precision = 12, scale = 2)
-    private double costoEstimado;
+    @Column(name = "COSTO_ESTIMADO", columnDefinition= "DECIMAL(12,2)")
+    private Double costoEstimado;
 
-    @Column(name = "COSTO_REAL", precision = 12, scale = 2)
-    private double costoReal;
+    @Column(name = "COSTO_REAL", columnDefinition= "DECIMAL(12,2)")
+    private Double costoReal;
 
     @Column(name = "ID_DEPOSITO")
-    private long idDeposito;
+    private Long idDeposito;
 
     @Column(name = "ID_CONTENEDOR")
-    private long idContenedor;
+    private Long idContenedor;
 
     @Column(name = "ID_TRASLADO")
-    private long idTraslado;
+    private Long idTraslado;
 
     public Estadias(long idEstadia, LocalDateTime fechaHoraInicioEstimada, LocalDateTime fechaHoraFinEstimada,
                     LocalDateTime fechaHoraInicioReal, LocalDateTime fechaHoraFinReal,
