@@ -27,7 +27,7 @@ public class HistoricoEstadoTraslado {
   @Column(name = "FECHA_HORA_FIN_ESTADO")
   private LocalDateTime fechaHoraFinEstado;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "ID_TRASLADO", nullable = false, foreignKey = @ForeignKey(name = "FK_HISTORICOS_TRASLADO"))
   private Traslado traslado;
 

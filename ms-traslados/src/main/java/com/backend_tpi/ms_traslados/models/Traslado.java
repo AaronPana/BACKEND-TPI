@@ -52,7 +52,7 @@ public class Traslado {
   @Column(name = "ID_CONTENEDOR", nullable = false)
   private Long idContenedor;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "NRO_DOCUMENTO_CLIENTE", nullable = false, foreignKey = @ForeignKey(name = "FK_TRASLADOS_CLIENTE"))
   private Cliente cliente;
 }
