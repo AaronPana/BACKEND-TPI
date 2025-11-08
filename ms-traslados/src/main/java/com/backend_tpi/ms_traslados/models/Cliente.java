@@ -16,7 +16,7 @@ public class Cliente {
 
   @Id
   @Column(name = "NRO_DOCUMENTO", nullable = false, length = 10)
-  private long nroDocumento;
+  private Long nroDocumento;
 
   @Column(name = "NOMBRE", nullable = false, length = 80)
   private String nombre;
@@ -34,7 +34,7 @@ public class Cliente {
   private String direccion;
 
   @Column(name = "ID_CIUDAD", nullable = false)
-  private long idCiudad;
+  private Long idCiudad;
 
   @OneToMany(mappedBy = "cliente")
   private List<Traslado> traslados;

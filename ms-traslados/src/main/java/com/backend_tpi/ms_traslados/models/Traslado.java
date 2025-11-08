@@ -17,7 +17,7 @@ public class Traslado {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "ID_TRASLADO")
-  private long idTraslado;
+  private Long idTraslado;
 
   @Column(name = "FECHA_INICIO_TRASLADO")
   private LocalDateTime fechaInicioTraslado;
@@ -26,16 +26,16 @@ public class Traslado {
   private LocalDateTime fechaFinTraslado;
 
   @Column(name = "COSTO_ESTIMADO", columnDefinition = "DECIMAL(12,2)")
-  private double costoEstimado;
+  private Double costoEstimado;
 
   @Column(name = "COSTO_REAL", columnDefinition = "DECIMAL(12,2)")
-  private double costoReal;
+  private Double costoReal;
 
   @Column(name = "TIEMPO_ESTIMADO")
-  private int tiempoEstimado;
+  private Integer tiempoEstimado;
 
   @Column(name = "TIEMPO_REAL")
-  private int tiempoReal;
+  private Integer tiempoReal;
 
   @Column(name = "DIRECCION_ORIGEN", length = 200)
   private String direccionOrigen;
@@ -44,15 +44,15 @@ public class Traslado {
   private String direccionDestino;
 
   @Column(name = "ID_CIUDAD_ORIGEN", nullable = false)
-  private long idCiudadOrigen;
+  private Long idCiudadOrigen;
 
   @Column(name = "ID_CIUDAD_DESTINO", nullable = false)
-  private long idCiudadDestino;
+  private Long idCiudadDestino;
 
   @Column(name = "ID_CONTENEDOR", nullable = false)
-  private long idContenedor;
+  private Long idContenedor;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "NRO_DOCUMENTO_CLIENTE", nullable = false, foreignKey = @ForeignKey(name = "FK_TRASLADOS_CLIENTE"))
   private Cliente cliente;
 }
