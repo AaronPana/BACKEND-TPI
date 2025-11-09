@@ -7,6 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.client.ResourceAccessException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
@@ -127,6 +129,61 @@ public class GlobalExceptionHandler {
         .build();
 
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+  }
+
+  // ==========================================
+  // ERROR DE CONEXIÓN CON SERVICIO EXTERNO
+  // Error de conexión (timeout, red caída, etc.)
+  // ==========================================
+
+  @ExceptionHandler(ResourceAccessException.class)
+  public ResponseEntity<ErrorResponse> handleResourceAccessException(
+      ResourceAccessException ex,
+      HttpServletRequest request) {
+
+    String logMessage = String.format("Error de conexión: %s",
+        ex.getMessage());
+
+    log.error("No se pudo conectar con servicio externo en {}: {}",
+        request.getRequestURI(), logMessage, ex);
+
+    ErrorResponse errorResponse = ErrorResponse.builder()
+        .timestamp(LocalDateTime.now())
+        .status(HttpStatus.SERVICE_UNAVAILABLE.value())
+        .error("SERVICE_UNAVAILABLE")
+        .message("El servicio externo no está disponible en este momento")
+        .path(request.getRequestURI())
+        .build();
+
+    return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(errorResponse);
+  }
+
+  // ==========================================
+  // ERROR GENERAL DE CLIENTE REST
+  // Cualquier otro error de RestClient
+  // Errores de conexión, serialización JSON, formato inválido
+  // ==========================================
+
+  @ExceptionHandler(RestClientException.class)
+  public ResponseEntity<ErrorResponse> handleRestClientException(
+      RestClientException ex,
+      HttpServletRequest request) {
+
+    String logMessage = String.format("Error en cliente REST: %s",
+        ex.getMessage());
+
+    log.error("Error al consumir API externa en {}: {}",
+        request.getRequestURI(), logMessage, ex);
+
+    ErrorResponse errorResponse = ErrorResponse.builder()
+        .timestamp(LocalDateTime.now())
+        .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+        .error("EXTERNAL_SERVICE_ERROR")
+        .message("Error al comunicarse con el servicio externo")
+        .path(request.getRequestURI())
+        .build();
+
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
   }
 
   // ==========================================
