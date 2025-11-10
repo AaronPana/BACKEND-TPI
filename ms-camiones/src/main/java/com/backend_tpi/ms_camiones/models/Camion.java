@@ -16,13 +16,13 @@ public class Camion {
     private String patente;
 
     @Column(name = "CAPACIDAD_PESO", nullable = false)
-    private Integer capacidadPeso;
+    private Double capacidadPeso;
 
     @Column(name = "CAPACIDAD_VOLUMEN", nullable = false)
-    private Integer capacidadVolumen;
+    private Double capacidadVolumen;
 
-    @Column(name = "CONSUMO_PROMEDIO", nullable = false, precision = 12, scale = 2)
-    private BigDecimal consumoPromedio;
+    @Column(name = "CONSUMO_PROMEDIO", nullable = false)
+    private Double consumoPromedio;
 
     // 'S' o 'N' (en BD: CHAR(1))
     @Column(name = "ESTA_DISPONIBLE", nullable = false, length = 1)

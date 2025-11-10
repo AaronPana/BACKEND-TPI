@@ -19,6 +19,6 @@ public class Tarifa {
     @Column(name = "CONCEPTO", nullable = false, length = 100, unique = true)
     private String concepto;
 
-    @Column(name = "COSTO_X_KILOMETRO", nullable = false, precision = 12, scale = 2)
+    @Column(name = "COSTO_X_KILOMETRO", nullable = false)
     private BigDecimal costoXKilometro;
 }
