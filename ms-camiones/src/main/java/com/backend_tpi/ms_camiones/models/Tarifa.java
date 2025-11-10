@@ -20,5 +20,5 @@ public class Tarifa {
     private String concepto;
 
     @Column(name = "COSTO_X_KILOMETRO", nullable = false)
-    private BigDecimal costoXKilometro;
+    private Double costoXKilometro;
 }

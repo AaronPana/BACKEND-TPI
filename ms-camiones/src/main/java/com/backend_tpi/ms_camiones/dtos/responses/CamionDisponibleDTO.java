@@ -13,5 +13,5 @@ public class CamionDisponibleDTO {
     private double capacidadPeso;
     private double capacidadVolumen;
     private double consumoPromedio;
-    private double costoXKilometro;
+    private double costoXKilometro; // de la Tarifa
 }
