@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 public class Tramo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long idTramo;
+    private Long idTramo;
 
     @Column(name = "FECHA_HORA_INICIO_ESTIMADA")
     private LocalDateTime fechaHoraInicioEstimada;
@@ -55,25 +55,25 @@ public class Tramo {
     private String patenteCamion;
 
     @Column(name = "LEGAJO_TRANSPORTISTA", nullable = false)
-    private long legajoTransportista;
+    private Long legajoTransportista;
 
     @Column(name = "ID_DEPOSITO_ORIGEN")
-    private long idDepositoOrigen;
+    private Long idDepositoOrigen;
 
     @Column(name = "ID_DEPOSITO_DESTINO")
-    private long idDepositoDestino;
+    private Long idDepositoDestino;
 
     @Column(name = "ID_TRASLADO",  nullable = false)
-    private long idTraslado;
+    private Long idTraslado;
 
     @Column(name = "ID_CIUDAD_ORIGEN", nullable = false)
-    private long idCiudadOrigen;
+    private Long idCiudadOrigen;
 
     @Column(name = "ID_CIUDAD_DESTINO", nullable = false)
-    private long idCiudadDestino;
+    private Long idCiudadDestino;
 
 
-    public Tramo(long idTramo, LocalDateTime fechaHoraInicioEstimada, LocalDateTime fechaHoraFinEstimada, LocalDateTime fechaHoraInicioReal, LocalDateTime fechaHoraFinReal, double costoEstimado, double costoReal, String direccionOrigen, String direccionDestino, EstadoTramo estadoTramo, TipoTramo tipoTramo, String patenteCamion, long legajoTransportista, long idDepositoOrigen, long idDepositoDestino, long idTraslado, long idCiudadOrigen, long idCiudadDestino) {
+    public Tramo(Long idTramo, LocalDateTime fechaHoraInicioEstimada, LocalDateTime fechaHoraFinEstimada, LocalDateTime fechaHoraInicioReal, LocalDateTime fechaHoraFinReal, Double costoEstimado, Double costoReal, String direccionOrigen, String direccionDestino, EstadoTramo estadoTramo, TipoTramo tipoTramo, String patenteCamion, Long legajoTransportista, Long idDepositoOrigen, Long idDepositoDestino, Long idTraslado, Long idCiudadOrigen, Long idCiudadDestino) {
         this.idTramo = idTramo;
         this.fechaHoraInicioEstimada = fechaHoraInicioEstimada;
         this.fechaHoraFinEstimada = fechaHoraFinEstimada;
