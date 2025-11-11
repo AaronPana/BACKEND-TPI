@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.backend_tpi.ms_contenedores.dtos.responses.CoordenadasDTO;
 import com.backend_tpi.ms_contenedores.models.Depositos;
 import com.backend_tpi.ms_contenedores.services.DepositoService;
 
@@ -31,5 +32,11 @@ public class DepositoController {
     public Depositos getDepositoById(@PathVariable("id") Long id) {
         return depositoService.findById(id)
                 .orElseThrow(() -> new RuntimeException("Depósito no encontrado"));
+    }
+
+    @GetMapping("/{id}/coordenadas")
+    public ResponseEntity<CoordenadasDTO> getCoordenadas(@PathVariable("id") Long id) {
+        CoordenadasDTO dto = depositoService.getCoordenadas(id);
+        return ResponseEntity.ok(dto);
     }
 }
