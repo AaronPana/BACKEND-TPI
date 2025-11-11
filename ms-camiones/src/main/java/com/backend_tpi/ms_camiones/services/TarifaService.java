@@ -13,7 +13,6 @@ public class TarifaService {
     @Autowired
     private TarifaRepository tarifaRepository;
 
-    // 🔹 Ya tenías este método
     public TarifaDTO actualizar(Integer id, TarifaDTO dto) {
         Tarifa tarifa = tarifaRepository.findById(id)
                 .orElseThrow(() -> BaseException.notFoundById("Tarifa", id));
