@@ -1,6 +1,9 @@
 package com.backend_tpi.ms_rutas.services;
 
 import com.backend_tpi.ms_rutas.constants.EstadoTramo;
+import com.backend_tpi.ms_rutas.constants.TipoTramo;
+import com.backend_tpi.ms_rutas.dtos.responses.HojaDeRutaDTO;
+import com.backend_tpi.ms_rutas.dtos.responses.RutaSeleccionadaDTO;
 import com.backend_tpi.ms_rutas.dtos.responses.TramoDTO;
 import com.backend_tpi.ms_rutas.exceptions.BaseException;
 import com.backend_tpi.ms_rutas.mappers.TramoMapper;
@@ -54,16 +57,10 @@ public class TramoService {
         tramoRepository.delete(tramo);
     }
 
-    public void asignarCamionDisponible(){
+    public void asignarCamionDisponible() {
 
     }
 
-    public Tramo FinalizarTramo(Long idTramo) {
-        Tramo tramo = findById(idTramo);
-        tramo.setFechaHoraFinReal(LocalDateTime.now());
-        tramo.setEstadoTramo(EstadoTramo.FINALIZADO);
-        return tramoRepository.save(tramo);
-    }
 
     public EstadoTramo obtenerEstadoTramo(Long idTramo) {
         Tramo tramo = findById(idTramo);
@@ -97,9 +94,60 @@ public class TramoService {
         return TramoMapper.toDTO(tramoActualizado);
     }
 
+    public TramoDTO asignarFechaFinReal(Long idTramo, LocalDateTime fechaFinReal) {
+        Tramo tramo = findById(idTramo);
 
+        if (tramo.getFechaHoraFinReal() != null) {
+            throw BaseException.badRequest("El tramo ya tiene una fecha de fin real asignada.");
+        }
+        tramo.setFechaHoraFinReal(fechaFinReal);
+        tramo.setEstadoTramo(EstadoTramo.FINALIZADO);
 
+        Tramo tramoActualizado = tramoRepository.save(tramo);
+        return TramoMapper.toDTO(tramoActualizado);
 
+    }
 
+    public Tramo guardarRutaSeleccionada(RutaSeleccionadaDTO dto) {
+        Tramo tramo = new Tramo();
 
+        tramo.setDireccionOrigen(dto.getDireccionOrigen());
+        tramo.setDireccionDestino(dto.getDireccionDestino());
+        tramo.setCostoEstimado(dto.getCostoEstimado());
+        tramo.setFechaHoraInicioEstimada(LocalDateTime.now());
+        tramo.setEstadoTramo(EstadoTramo.ASIGNADO);
+        tramo.setTipoTramo(TipoTramo.valueOf(dto.getTipoTramo())); // Ej: ORIGEN_DESTINO
+
+        tramo.setPatenteCamion(dto.getPatenteCamion());
+        tramo.setLegajoTransportista(dto.getLegajoTransportista());
+        tramo.setIdDepositoOrigen(dto.getIdDepositoOrigen());
+        tramo.setIdDepositoDestino(dto.getIdDepositoDestino());
+        tramo.setIdTraslado(dto.getIdTraslado());
+        tramo.setIdCiudadOrigen(dto.getIdCiudadOrigen());
+        tramo.setIdCiudadDestino(dto.getIdCiudadDestino());
+
+        return tramoRepository.save(tramo);
+    }
+
+    public HojaDeRutaDTO getHojaDeRuta(Long idTraslado) {
+        List<Tramo> tramos = tramoRepository.findByIdTrasladoOrderByIdTramoAsc(idTraslado);
+
+        if (tramos.isEmpty()) {
+            throw BaseException.notFound("No se encontraron tramos para el traslado con ID " + idTraslado);
+        }
+
+        return new HojaDeRutaDTO(
+                idTraslado,
+                tramos.size(),
+                tramos
+        );
+    }
 }
+
+
+
+
+
+
+
+

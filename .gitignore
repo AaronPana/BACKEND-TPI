@@ -35,3 +35,7 @@ Thumbs.db
 *.bak
 *.swp
 *~
+
+# OSRM
+osrm-data/
+docker-compose.osrm.yml
