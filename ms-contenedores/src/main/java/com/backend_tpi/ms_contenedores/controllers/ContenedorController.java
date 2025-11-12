@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.backend_tpi.ms_contenedores.dtos.responses.PesoVolumenDTO;
 import com.backend_tpi.ms_contenedores.models.Contenedores;
 import com.backend_tpi.ms_contenedores.services.ContenedorService;
 
@@ -31,5 +32,11 @@ public class ContenedorController {
     public Contenedores getContenedorById(@PathVariable("id") Long id) {
         return contenedorService.findById(id)
                 .orElseThrow(() -> new RuntimeException("Contenedor no encontrado"));
+    }
+
+    @GetMapping("/{id}/peso-volumen")
+    public ResponseEntity<PesoVolumenDTO> getPesoVolumen(@PathVariable("id") Long id) {
+        PesoVolumenDTO dto = contenedorService.getPesoVolumen(id);
+        return ResponseEntity.ok(dto);
     }
 }
