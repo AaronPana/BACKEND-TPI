@@ -15,4 +15,11 @@ public interface CamionRepository extends JpaRepository<Camion, String> {
 
     // Trae el primero disponible (determinístico por patente)
     Optional<Camion> findFirstByEstaDisponibleOrderByPatenteAsc(String estaDisponible);
+
+    // Busca el primer camión disponible que tenga capacidadPeso >= x y capacidadVolumen >= y
+    Optional<Camion> findFirstByEstaDisponibleAndCapacidadPesoGreaterThanEqualAndCapacidadVolumenGreaterThanEqualOrderByPatenteAsc(
+            String estaDisponible,
+            double capacidadPeso,
+            double capacidadVolumen
+    );
 }

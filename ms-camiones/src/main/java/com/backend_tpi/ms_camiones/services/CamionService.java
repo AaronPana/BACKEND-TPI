@@ -1,6 +1,6 @@
 package com.backend_tpi.ms_camiones.services;
 
-import com.backend_tpi.ms_camiones.dtos.responses.CamionDisponibleDTO;
+import com.backend_tpi.ms_camiones.dtos.responses.CamionFiltradoDTO;
 import com.backend_tpi.ms_camiones.exceptions.BaseException;
 import com.backend_tpi.ms_camiones.models.Camion;
 import com.backend_tpi.ms_camiones.repositories.CamionRepository;
@@ -15,6 +15,9 @@ public class CamionService {
     @Autowired
     private CamionRepository camionRepository;
 
+    /**
+     * Devuelve las patentes de todos los camiones disponibles ('S')
+     */
     public List<String> obtenerPatentesDisponibles() {
         return camionRepository.findByEstaDisponible("S")
                 .stream()
@@ -22,6 +25,9 @@ public class CamionService {
                 .toList();
     }
 
+    /**
+     * Devuelve las patentes de todos los camiones no disponibles ('N')
+     */
     public List<String> obtenerPatentesNoDisponibles() {
         return camionRepository.findByEstaDisponible("N")
                 .stream()
@@ -29,28 +35,41 @@ public class CamionService {
                 .toList();
     }
 
-    /** Cambia el estado del camión a NO disponible ('N'). */
+    /**
+     * Cambia el estado de un camión a no disponible ('N')
+     */
     public void asignarNoDisponible(String patente) {
         Camion camion = camionRepository.findById(patente)
                 .orElseThrow(() -> BaseException.notFoundById("Camion", patente));
+
         if (!"N".equalsIgnoreCase(camion.getEstaDisponible())) {
             camion.setEstaDisponible("N");
             camionRepository.save(camion);
         }
     }
 
-    /** Devuelve la info del primer camión disponible ('S'). */
-    public CamionDisponibleDTO obtenerUnCamionDisponible() {
+    /**
+     * Devuelve UN camión disponible ('S') que cumpla:
+     * capacidadPeso >= capacidadPesoReq
+     * capacidadVolumen >= capacidadVolumenReq
+     */
+    public CamionFiltradoDTO obtenerCamionDisponiblePorCapacidades(double capacidadPesoReq, double capacidadVolumenReq) {
         Camion cam = camionRepository
-                .findFirstByEstaDisponibleOrderByPatenteAsc("S")
-                .orElseThrow(() -> BaseException.notFoundById("Camion disponible", "S"));
+                .findFirstByEstaDisponibleAndCapacidadPesoGreaterThanEqualAndCapacidadVolumenGreaterThanEqualOrderByPatenteAsc(
+                        "S",
+                        capacidadPesoReq,
+                        capacidadVolumenReq
+                )
+                .orElseThrow(() -> BaseException.notFoundById(
+                        "Camion disponible con las capacidades mínimas",
+                        String.format("peso >= %.2f volumen >= %.2f", capacidadPesoReq, capacidadVolumenReq)
+                ));
 
-        return new CamionDisponibleDTO(
+        return new CamionFiltradoDTO(
                 cam.getPatente(),
                 cam.getCapacidadPeso(),
                 cam.getCapacidadVolumen(),
-                cam.getConsumoPromedio(),
-                cam.getTarifa().getCostoXKilometro()
+                cam.getConsumoPromedio()
         );
     }
 }
