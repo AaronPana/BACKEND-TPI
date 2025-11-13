@@ -1,5 +1,6 @@
 package com.backend_tpi.ms_traslados.services;
 
+import com.backend_tpi.ms_traslados.dtos.requests.ClientePostDtoReq;
 import com.backend_tpi.ms_traslados.dtos.responses.ClienteDtoRes;
 import com.backend_tpi.ms_traslados.dtos.responses.FullClienteDtoRes;
 import com.backend_tpi.ms_traslados.dtos.responses.TrasladoSinClienteDtoRes;
@@ -14,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +26,19 @@ public class ClienteService {
   private final ClienteRepository clienteRepository;
   private final ClienteMapper clienteMapper;
 
+  public ClienteDtoRes create(ClientePostDtoReq clientePostDtoReq) {
+    Optional<Cliente> clienteFinded = this.clienteRepository.findById(clientePostDtoReq.getNroDocumento());
+    if (clienteFinded.isPresent()) {
+      throw BaseException.alreadyExists("Cliente", "nroDocumento", clientePostDtoReq.getNroDocumento());
+    }
+
+    Cliente cliente = this.clienteMapper.postDtoReqToCliente(clientePostDtoReq);
+    CiudadProvinciaDtoRes ciudadProvinciaDtoRes = this.camionesApiClient.getCiudadProvincia(cliente.getIdCiudad());
+
+    this.clienteRepository.save(cliente);
+    return this.clienteMapper.clienteToDtoRes(cliente, ciudadProvinciaDtoRes.getCiudadProvincia());
+  }
+
   public List<ClienteDtoRes> getAll() {
     List<Cliente> clientes = this.clienteRepository.findAll();
     return clientes.stream().map((Cliente cliente) -> {
@@ -33,13 +48,23 @@ public class ClienteService {
   }
 
   public FullClienteDtoRes getById(Long nroDocumento) {
+    return this.clienteRepository.findById(nroDocumento)
+        .map(cliente -> {
+          CiudadProvinciaDtoRes ciudadProvincia = this.camionesApiClient.getCiudadProvincia(cliente.getIdCiudad());
+          List<TrasladoSinClienteDtoRes> traslados = this.trasladoRepository.findByClienteNroDocumento(nroDocumento);
+          return this.clienteMapper.fullClienteToDtoRes(cliente, ciudadProvincia.getCiudadProvincia(), traslados);
+        })
+        .orElseThrow(() -> BaseException.notFoundById("Cliente", nroDocumento));
+  }
+
+  public void delete(Long nroDocumento) {
     Cliente cliente = this.clienteRepository.findById(nroDocumento)
         .orElseThrow(() -> BaseException.notFoundById("Cliente", nroDocumento));
 
-    CiudadProvinciaDtoRes ciudadProvinciaDtoRes = this.camionesApiClient.getCiudadProvincia(cliente.getIdCiudad());
+    if (!cliente.getTraslados().isEmpty()) {
+      throw BaseException.businessError("El cliente contiene traslados asociados");
+    }
 
-    List<TrasladoSinClienteDtoRes> traslados = this.trasladoRepository.findByClienteNroDocumento(cliente.getNroDocumento());
-
-    return this.clienteMapper.fullClienteToDtoRes(cliente, ciudadProvinciaDtoRes.getCiudadProvincia(), traslados);
+    this.clienteRepository.delete(cliente);
   }
 }

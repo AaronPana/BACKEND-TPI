@@ -17,4 +17,8 @@ public class ContenedoresApiClient {
 //  en application-local.properties y usar acá
 //  @Value("${api.ms-contenedores.key}")
 //  private String apiKey;
+
+  public Long postContenedor() {
+    return 1L;
+  }
 }
