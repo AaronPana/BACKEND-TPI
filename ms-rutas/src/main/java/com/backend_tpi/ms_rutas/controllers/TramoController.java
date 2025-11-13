@@ -1,6 +1,7 @@
 package com.backend_tpi.ms_rutas.controllers;
 
 import com.backend_tpi.ms_rutas.constants.EstadoTramo;
+import com.backend_tpi.ms_rutas.dtos.responses.HojaDeRutaDTO;
 import com.backend_tpi.ms_rutas.dtos.responses.TramoDTO;
 import com.backend_tpi.ms_rutas.models.Tramo;
 import com.backend_tpi.ms_rutas.services.TramoService;
@@ -38,6 +39,7 @@ public class TramoController {
     public ResponseEntity<Tramo> create(@RequestBody Tramo tramo) {
         Tramo creado = tramoService.create(tramo);
         return ResponseEntity.status(HttpStatus.CREATED).body(creado);
+
     }
 
     @DeleteMapping("/{id}")
@@ -69,5 +71,12 @@ public class TramoController {
         TramoDTO tramoActualizado = tramoService.asignarFechaInicioReal(idTramo, fechaInicioReal);
         return ResponseEntity.ok(tramoActualizado);
     }
+
+    @GetMapping("/hoja-de-ruta/{idTraslado}")
+    public HojaDeRutaDTO getHojaDeRuta(@PathVariable Long idTraslado) {
+        return tramoService.getHojaDeRuta(idTraslado);
+    }
+
+
 
 }
