@@ -1,11 +1,13 @@
 package com.backend_tpi.ms_traslados.controllers;
 
+import com.backend_tpi.ms_traslados.dtos.requests.TrasladoPatchDtoReq;
 import com.backend_tpi.ms_traslados.dtos.requests.TrasladoPostDtoReq;
-import com.backend_tpi.ms_traslados.dtos.responses.TrasladoSinClienteDtoRes;
+import com.backend_tpi.ms_traslados.dtos.responses.TrasladoDetalleDtoRes;
+import com.backend_tpi.ms_traslados.dtos.responses.TrasladoMetricasDtoRes;
+import com.backend_tpi.ms_traslados.dtos.responses.TrasladoResumenDtoRes;
 import com.backend_tpi.ms_traslados.services.TrasladoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -21,8 +23,8 @@ public class TrasladoController {
   private final TrasladoService trasladoService;
 
   @PostMapping
-  public ResponseEntity<TrasladoSinClienteDtoRes> create(@RequestBody @Valid TrasladoPostDtoReq trasladoPostDtoReq) {
-    TrasladoSinClienteDtoRes trasladoSinClienteDtoRes = this.trasladoService.create(trasladoPostDtoReq);
+  public ResponseEntity<TrasladoResumenDtoRes> create(@RequestBody @Valid TrasladoPostDtoReq trasladoPostDtoReq) {
+    TrasladoResumenDtoRes trasladoSinClienteDtoRes = this.trasladoService.create(trasladoPostDtoReq);
 
     URI location = ServletUriComponentsBuilder
         .fromCurrentRequest()
@@ -34,9 +36,24 @@ public class TrasladoController {
   }
 
   @GetMapping("/{idTraslado}")
-  public ResponseEntity<TrasladoSinClienteDtoRes> getById(@PathVariable Long idTraslado) {
-    TrasladoSinClienteDtoRes trasladoSinClienteDtoRes = this.trasladoService.getById(idTraslado);
-    return ResponseEntity.ok(trasladoSinClienteDtoRes);
+  public ResponseEntity<TrasladoDetalleDtoRes> getById(@PathVariable Long idTraslado) {
+    TrasladoDetalleDtoRes trasladoDetalleDtoRes = this.trasladoService.getById(idTraslado);
+    return ResponseEntity.ok(trasladoDetalleDtoRes);
+  }
+
+  @GetMapping("/{idTraslado}/metricas")
+  public ResponseEntity<TrasladoMetricasDtoRes> getMetricasById(@PathVariable Long idTraslado) {
+    TrasladoMetricasDtoRes trasladoMetricasDtoRes = this.trasladoService.getMetricasById(idTraslado);
+    return ResponseEntity.ok(trasladoMetricasDtoRes);
+  }
+
+  @PatchMapping("/{idTraslado}")
+  public ResponseEntity<TrasladoDetalleDtoRes> partialUpdate(
+      @PathVariable Long idTraslado,
+      @RequestBody @Valid TrasladoPatchDtoReq trasladoPatchDtoReq) {
+
+    TrasladoDetalleDtoRes trasladoDetalleDtoRes = this.trasladoService.actualizarParcial(idTraslado, trasladoPatchDtoReq);
+    return ResponseEntity.ok(trasladoDetalleDtoRes);
   }
 
   @DeleteMapping("/{idTraslado}")

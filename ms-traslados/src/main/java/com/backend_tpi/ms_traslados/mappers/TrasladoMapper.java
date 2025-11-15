@@ -1,11 +1,15 @@
 package com.backend_tpi.ms_traslados.mappers;
 
 import com.backend_tpi.ms_traslados.dtos.requests.TrasladoPostDtoReq;
-import com.backend_tpi.ms_traslados.dtos.responses.TrasladoSinClienteDtoRes;
+import com.backend_tpi.ms_traslados.dtos.responses.TrasladoDetalleDtoRes;
+import com.backend_tpi.ms_traslados.dtos.responses.TrasladoMetricasDtoRes;
+import com.backend_tpi.ms_traslados.dtos.responses.TrasladoResumenDtoRes;
+import com.backend_tpi.ms_traslados.external.dtos.responses.ContenedorDtoRes;
 import com.backend_tpi.ms_traslados.models.Cliente;
 import com.backend_tpi.ms_traslados.models.Traslado;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 @Component
@@ -22,67 +26,80 @@ public class TrasladoMapper {
     return traslado;
   }
 
-  public TrasladoSinClienteDtoRes trasladoToTrasladoSinClienteDtoRes(Traslado traslado) {
-    return new TrasladoSinClienteDtoRes() {
-      @Override
-      public Long getIdTraslado() {
-        return traslado.getIdTraslado();
-      }
+  public TrasladoResumenDtoRes trasladoToTrasladoResumenDtoRes(Traslado traslado) {
+    TrasladoResumenDtoRes trasladoResumenDtoRes = new TrasladoResumenDtoRes();
+    trasladoResumenDtoRes.setIdTraslado(traslado.getIdTraslado());
+    trasladoResumenDtoRes.setFechaInicioTraslado(traslado.getFechaInicioTraslado());
+    trasladoResumenDtoRes.setFechaFinTraslado(traslado.getFechaFinTraslado());
+    trasladoResumenDtoRes.setDireccionOrigen(traslado.getDireccionOrigen());
+    trasladoResumenDtoRes.setDireccionDestino(traslado.getDireccionDestino());
+    trasladoResumenDtoRes.setIdCiudadOrigen(traslado.getIdCiudadOrigen());
+    trasladoResumenDtoRes.setIdCiudadDestino(traslado.getIdCiudadDestino());
+    return trasladoResumenDtoRes;
+  }
 
-      @Override
-      public LocalDateTime getFechaInicioTraslado() {
-        return traslado.getFechaInicioTraslado();
-      }
+  public TrasladoDetalleDtoRes trasladoToTrasladoDetalleDtoRes(Traslado traslado, ContenedorDtoRes contenedorDtoRes) {
+    TrasladoDetalleDtoRes trasladoDetalleDtoRes = new TrasladoDetalleDtoRes();
+    trasladoDetalleDtoRes.setIdTraslado(traslado.getIdTraslado());
+    trasladoDetalleDtoRes.setFechaInicioTraslado(traslado.getFechaInicioTraslado());
+    trasladoDetalleDtoRes.setFechaFinTraslado(traslado.getFechaFinTraslado());
+    trasladoDetalleDtoRes.setCostoEstimado(traslado.getCostoEstimado());
+    trasladoDetalleDtoRes.setCostoReal(traslado.getCostoReal());
+    trasladoDetalleDtoRes.setTiempoEstimado(
+        this.parseDurationToString(traslado.getTiempoEstimado())
+    );
+    trasladoDetalleDtoRes.setTiempoReal(
+        this.parseDurationToString(traslado.getTiempoReal())
+    );
+    trasladoDetalleDtoRes.setDireccionOrigen(traslado.getDireccionOrigen());
+    trasladoDetalleDtoRes.setDireccionDestino(traslado.getDireccionDestino());
+    trasladoDetalleDtoRes.setIdCiudadOrigen(traslado.getIdCiudadOrigen());
+    trasladoDetalleDtoRes.setIdCiudadDestino(traslado.getIdCiudadDestino());
+    trasladoDetalleDtoRes.setContenedor(contenedorDtoRes);
+    return trasladoDetalleDtoRes;
+  }
 
-      @Override
-      public LocalDateTime getFechaFinTraslado() {
-        return traslado.getFechaFinTraslado();
-      }
+  public TrasladoMetricasDtoRes trasladoToTrasladoMetricasDtoRes(Traslado traslado) {
+    TrasladoMetricasDtoRes trasladoMetricasDtoRes = new TrasladoMetricasDtoRes();
+    trasladoMetricasDtoRes.setCostoEstimado(traslado.getCostoEstimado());
+    trasladoMetricasDtoRes.setCostoReal(traslado.getCostoReal());
+    trasladoMetricasDtoRes.setTiempoEstimado(
+        this.parseDurationToString(traslado.getTiempoEstimado())
+    );
+    trasladoMetricasDtoRes.setTiempoReal(
+        this.parseDurationToString(traslado.getTiempoReal())
+    );
+    return  trasladoMetricasDtoRes;
+  }
 
-      @Override
-      public Double getCostoEstimado() {
-        return traslado.getCostoEstimado();
-      }
+  public Duration parseStringToDuration(String duracionStr) {
+    if (duracionStr == null) return null;
 
-      @Override
-      public Double getCostoReal() {
-        return traslado.getCostoReal();
-      }
+    // Formato "dd HH:mm:ss"
+    String[] partes = duracionStr.split(" ");
+    long dias = Long.parseLong(partes[0]);
 
-      @Override
-      public Integer getTiempoEstimado() {
-        return traslado.getTiempoEstimado();
-      }
+    String[] hms = partes[1].split(":");
+    long horas = Long.parseLong(hms[0]);
+    long minutos = Long.parseLong(hms[1]);
+    long segundos = Long.parseLong(hms[2]);
 
-      @Override
-      public Integer getTiempoReal() {
-        return traslado.getTiempoReal();
-      }
+    return Duration.ofDays(dias)
+        .plusHours(horas)
+        .plusMinutes(minutos)
+        .plusSeconds(segundos);
+  }
 
-      @Override
-      public String getDireccionOrigen() {
-        return traslado.getDireccionOrigen();
-      }
+  public String parseDurationToString(Duration duracion) {
+    if (duracion == null) return null;
 
-      @Override
-      public String getDireccionDestino() {
-        return traslado.getDireccionDestino();
-      }
-
-      @Override
-      public Long getIdCiudadOrigen() {
-        return traslado.getIdCiudadOrigen();
-      }
-
-      @Override
-      public Long getIdCiudadDestino() {
-        return traslado.getIdCiudadDestino();
-      }
-
-      @Override
-      public Long getIdContenedor() {
-        return traslado.getIdContenedor();
-      }
-    };
+    long dias = duracion.toDays();
+    duracion = duracion.minusDays(dias);
+    long horas = duracion.toHours();
+    duracion = duracion.minusHours(horas);
+    long minutos = duracion.toMinutes();
+    duracion = duracion.minusMinutes(minutos);
+    long segundos = duracion.getSeconds();
+    return String.format("%02d %02d:%02d:%02d", dias, horas, minutos, segundos);
   }
 }

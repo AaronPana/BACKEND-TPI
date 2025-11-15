@@ -3,7 +3,7 @@ package com.backend_tpi.ms_traslados.mappers;
 import com.backend_tpi.ms_traslados.dtos.requests.ClientePostDtoReq;
 import com.backend_tpi.ms_traslados.dtos.responses.ClienteDtoRes;
 import com.backend_tpi.ms_traslados.dtos.responses.FullClienteDtoRes;
-import com.backend_tpi.ms_traslados.dtos.responses.TrasladoSinClienteDtoRes;
+import com.backend_tpi.ms_traslados.dtos.responses.TrasladoResumenDtoRes;
 import com.backend_tpi.ms_traslados.models.Cliente;
 import com.backend_tpi.ms_traslados.models.Traslado;
 import org.springframework.stereotype.Component;
@@ -39,7 +39,7 @@ public class ClienteMapper {
     return clienteDtoRes;
   }
 
-  public FullClienteDtoRes fullClienteToDtoRes(Cliente cliente, String ciudadProvincia, List<TrasladoSinClienteDtoRes> traslados) {
+  public FullClienteDtoRes fullClienteToDtoRes(Cliente cliente, String ciudadProvincia, List<TrasladoResumenDtoRes> traslados) {
     FullClienteDtoRes fullClienteDtoRes = new FullClienteDtoRes();
     fullClienteDtoRes.setNroDocumento(cliente.getNroDocumento());
     fullClienteDtoRes.setNombreCompleto(cliente.getNombre() + " " + cliente.getApellido());
