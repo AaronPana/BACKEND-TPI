@@ -8,18 +8,20 @@ import org.springframework.web.client.RestClient;
 @Configuration
 public class RestClientConfig {
 
-  @Bean("camionesRestClient")
-  RestClient camionesRestClient(@Value("${api.ms-camiones.base_url}") String baseUrl) {
-    return RestClient.builder().baseUrl(baseUrl).build();
-  }
+    @Bean("camionesRestClient")
+    RestClient camionesRestClient(@Value("${api.ms-camiones.base_url}") String baseUrl) {
+        return RestClient.builder().baseUrl(baseUrl).build();
+    }
 
-  @Bean("contenedoresRestClient")
-  RestClient contenedoresRestClient(@Value("${api.ms-contenedores.base_url}") String baseUrl) {
-    return RestClient.builder().baseUrl(baseUrl).build();
-  }
+    @Bean("contenedoresRestClient")
+    RestClient contenedoresRestClient(@Value("${api.ms-contenedores.base_url}") String baseUrl) {
+        return RestClient.builder().baseUrl(baseUrl).build();
+    }
 
-  @Bean("trasladosRestClient")
-  RestClient trasladosRestClient(@Value("${api.ms_traslados.base_url}") String baseUrl) {
-    return RestClient.builder().baseUrl(baseUrl).build();
-  }
+    @Bean("trasladosRestClient")
+    RestClient trasladosRestClient(@Value("${api.ms_traslados.base_url}") String baseUrl) {
+        return RestClient.builder().baseUrl(baseUrl).build();
+    }
+
+
 }
