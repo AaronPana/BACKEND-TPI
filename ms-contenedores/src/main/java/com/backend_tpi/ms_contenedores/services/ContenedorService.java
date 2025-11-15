@@ -3,9 +3,12 @@ package com.backend_tpi.ms_contenedores.services;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
-import com.backend_tpi.ms_contenedores.dtos.responses.PesoVolumenDTO;
+import com.backend_tpi.ms_contenedores.constants.EstadoContenedor;
+import com.backend_tpi.ms_contenedores.dtos.PesoVolumenDTO;
 import com.backend_tpi.ms_contenedores.models.Contenedores;
 import com.backend_tpi.ms_contenedores.repositories.ContenedorRepository;
 
@@ -33,4 +36,35 @@ public class ContenedorService {
         return new PesoVolumenDTO(c.getPeso(), c.getVolumen());
     }
 
+    public Contenedores crearContenedor(PesoVolumenDTO request) {
+        // Validaciones claras y tempranas
+        if (request == null || request.getPeso() == null || request.getVolumen() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Peso y volumen son obligatorios");
+        }
+
+        Contenedores nuevo = new Contenedores();
+        nuevo.setPeso(request.getPeso());
+        nuevo.setVolumen(request.getVolumen());
+
+        // calcula costo de forma segura (no devuelve null)
+        Double costo = calcularCosto(request.getPeso(), request.getVolumen());
+        if (costo == null) {
+            costo = 0.0;
+        }
+
+        nuevo.setCostoXpesoXvolumen(costo);
+        nuevo.setEstadoContenedores(EstadoContenedor.ASIGNADO);
+        nuevo.setLatitud(0.0);
+        nuevo.setLongitud(0.0);
+
+        return contenedorRepository.save(nuevo);
+    }
+
+    private Double calcularCosto(Double peso, Double volumen) {
+        if (peso == null || volumen == null) {
+            return 0.0;
+        }
+        double tarifaPesoVolumen = 0.5; // ajustá según reglas de negocio
+        return peso * volumen * tarifaPesoVolumen;
+    }
 }

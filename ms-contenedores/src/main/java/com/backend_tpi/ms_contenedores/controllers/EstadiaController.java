@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.backend_tpi.ms_contenedores.dtos.responses.CostoEstadiaEstimadaDTO;
-import com.backend_tpi.ms_contenedores.dtos.responses.CostoEstadiaRealDTO;
+import com.backend_tpi.ms_contenedores.dtos.CostoEstadiaEstimadaDTO;
+import com.backend_tpi.ms_contenedores.dtos.CostoEstadiaRealDTO;
 import com.backend_tpi.ms_contenedores.models.Estadias;
 import com.backend_tpi.ms_contenedores.services.EstadiaService;
 

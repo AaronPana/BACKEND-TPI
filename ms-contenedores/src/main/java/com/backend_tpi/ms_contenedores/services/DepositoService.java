@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.backend_tpi.ms_contenedores.dtos.responses.CoordenadasDTO;
+import com.backend_tpi.ms_contenedores.dtos.CoordenadasDTO;
 import com.backend_tpi.ms_contenedores.models.Depositos;
 import com.backend_tpi.ms_contenedores.repositories.DepositoRepository;
 

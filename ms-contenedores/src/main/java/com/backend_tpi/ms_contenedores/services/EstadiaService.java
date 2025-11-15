@@ -5,8 +5,8 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import com.backend_tpi.ms_contenedores.dtos.responses.CostoEstadiaEstimadaDTO;
-import com.backend_tpi.ms_contenedores.dtos.responses.CostoEstadiaRealDTO;
+import com.backend_tpi.ms_contenedores.dtos.CostoEstadiaEstimadaDTO;
+import com.backend_tpi.ms_contenedores.dtos.CostoEstadiaRealDTO;
 import com.backend_tpi.ms_contenedores.models.Estadias;
 import com.backend_tpi.ms_contenedores.repositories.EstadiaRepository;
 

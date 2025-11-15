@@ -1,14 +1,17 @@
 package com.backend_tpi.ms_contenedores.controllers;
 
+import java.net.URI;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.backend_tpi.ms_contenedores.dtos.responses.PesoVolumenDTO;
+import com.backend_tpi.ms_contenedores.dtos.PesoVolumenDTO;
 import com.backend_tpi.ms_contenedores.models.Contenedores;
 import com.backend_tpi.ms_contenedores.services.ContenedorService;
 
@@ -39,4 +42,11 @@ public class ContenedorController {
         PesoVolumenDTO dto = contenedorService.getPesoVolumen(id);
         return ResponseEntity.ok(dto);
     }
+
+    @PostMapping
+    public ResponseEntity<Contenedores> crearContenedor(@RequestBody PesoVolumenDTO request) {
+        Contenedores creado = contenedorService.crearContenedor(request);
+        URI location = URI.create("/contenedores/" + creado.getIdContenedor());
+        return ResponseEntity.created(location).body(creado);
+}
 }

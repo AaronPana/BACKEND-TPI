@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.backend_tpi.ms_contenedores.dtos.responses.CoordenadasDTO;
+import com.backend_tpi.ms_contenedores.dtos.CoordenadasDTO;
 import com.backend_tpi.ms_contenedores.models.Depositos;
 import com.backend_tpi.ms_contenedores.services.DepositoService;
 
