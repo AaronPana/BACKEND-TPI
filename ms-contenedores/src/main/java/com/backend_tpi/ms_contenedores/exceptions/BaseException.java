@@ -67,7 +67,7 @@ public class BaseException extends RuntimeException {
   // ==========================================
 
   public static BaseException notFound(String resource, String field, Object value) {
-    String message = String.format("%s no encontrado con %s: %s", resource, field, value);
+    String message = String.format("Recurso '%s' con %s: %s no encontrado", resource, field, value);
     return new BaseException(message, HttpStatus.NOT_FOUND, "NOT_FOUND");
   }
 
