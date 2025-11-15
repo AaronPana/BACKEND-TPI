@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.backend_tpi.ms_contenedores.constants.EstadoContenedor;
+import com.backend_tpi.ms_contenedores.dtos.EstadoDTO;
 import com.backend_tpi.ms_contenedores.dtos.PesoVolumenDTO;
 import com.backend_tpi.ms_contenedores.models.Contenedores;
 import com.backend_tpi.ms_contenedores.repositories.ContenedorRepository;
@@ -66,5 +67,14 @@ public class ContenedorService {
         }
         double tarifaPesoVolumen = 0.5; // ajustá según reglas de negocio
         return peso * volumen * tarifaPesoVolumen;
+    }
+
+    public EstadoDTO getEstadoContenedor(Long id) {
+
+    Contenedores contenedor = contenedorRepository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Contenedor no encontrado"));
+
+    return new EstadoDTO(contenedor.getEstadoContenedores().name());
     }
 }

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.backend_tpi.ms_contenedores.dtos.EstadoDTO;
 import com.backend_tpi.ms_contenedores.dtos.PesoVolumenDTO;
 import com.backend_tpi.ms_contenedores.models.Contenedores;
 import com.backend_tpi.ms_contenedores.services.ContenedorService;
@@ -48,5 +49,11 @@ public class ContenedorController {
         Contenedores creado = contenedorService.crearContenedor(request);
         URI location = URI.create("/contenedores/" + creado.getIdContenedor());
         return ResponseEntity.created(location).body(creado);
+    }
+
+    @GetMapping("/{id}/estado")
+    public ResponseEntity<EstadoDTO> getEstado(@PathVariable Long id) {
+        EstadoDTO dto = contenedorService.getEstadoContenedor(id);
+        return ResponseEntity.ok(dto);
 }
 }
