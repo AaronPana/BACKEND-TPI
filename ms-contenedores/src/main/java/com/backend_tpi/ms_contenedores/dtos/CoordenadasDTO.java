@@ -1,4 +1,4 @@
-package com.backend_tpi.ms_contenedores.dtos.responses;
+package com.backend_tpi.ms_contenedores.dtos;
 
 
 public class CoordenadasDTO {
