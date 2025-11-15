@@ -1,6 +1,7 @@
 package com.backend_tpi.ms_traslados.dtos.responses;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.util.List;
@@ -8,7 +9,7 @@ import java.util.List;
 @Data
 public class FullClienteDtoRes {
 
-  @NotBlank
+  @NotNull
   private Long nroDocumento;
 
   @NotBlank
@@ -22,5 +23,5 @@ public class FullClienteDtoRes {
 
   private String ciudadProvincia;
 
-  private List<TrasladoSinClienteDtoRes> traslados;
+  private List<TrasladoResumenDtoRes> traslados;
 }

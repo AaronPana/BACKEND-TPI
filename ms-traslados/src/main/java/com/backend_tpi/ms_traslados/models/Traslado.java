@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 @Entity
@@ -32,10 +33,16 @@ public class Traslado {
   private Double costoReal;
 
   @Column(name = "TIEMPO_ESTIMADO")
-  private Integer tiempoEstimado;
+  private Long tiempoEstimadoMinutos;
 
   @Column(name = "TIEMPO_REAL")
-  private Integer tiempoReal;
+  private Long tiempoRealMinutos;
+
+  @Transient
+  private Duration tiempoEstimado;
+
+  @Transient
+  private Duration tiempoReal;
 
   @Column(name = "DIRECCION_ORIGEN", length = 200)
   private String direccionOrigen;
@@ -55,4 +62,22 @@ public class Traslado {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "NRO_DOCUMENTO_CLIENTE", nullable = false, foreignKey = @ForeignKey(name = "FK_TRASLADOS_CLIENTE"))
   private Cliente cliente;
+
+  public Duration getTiempoEstimado() {
+    return this.tiempoEstimadoMinutos != null ? Duration.ofMinutes(this.tiempoEstimadoMinutos) : null;
+  }
+
+  public void setTiempoEstimado(Duration tiempoEstimado) {
+    this.tiempoEstimado = tiempoEstimado;
+    this.tiempoEstimadoMinutos = tiempoEstimado != null ? tiempoEstimado.toMinutes() : null;
+  }
+
+  public Duration getTiempoReal() {
+    return this.tiempoRealMinutos != null ? Duration.ofSeconds(this.tiempoRealMinutos) : null;
+  }
+
+  public void setTiempoReal(Duration tiempoReal) {
+    this.tiempoReal = tiempoReal;
+    this.tiempoRealMinutos = tiempoReal != null ? tiempoReal.toMinutes() : null;
+  }
 }

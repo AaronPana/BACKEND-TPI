@@ -8,9 +8,10 @@ import lombok.Data;
 @Data
 public class ClienteDtoRes {
 
-  @NotBlank
+  @NotNull
   private Long nroDocumento;
 
+  @NotNull
   @NotBlank
   private String nombreCompleto;
 
@@ -18,6 +19,6 @@ public class ClienteDtoRes {
 
   private String ciudadProvincia;
 
-  @NotNull
+  @NotBlank
   private String tieneTraslados;
 }
