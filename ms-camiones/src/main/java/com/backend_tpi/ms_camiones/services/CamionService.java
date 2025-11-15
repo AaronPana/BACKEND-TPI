@@ -15,45 +15,44 @@ public class CamionService {
     @Autowired
     private CamionRepository camionRepository;
 
-    /**
-     * Devuelve las patentes de todos los camiones disponibles ('S')
-     */
-    public List<String> obtenerPatentesDisponibles() {
-        return camionRepository.findByEstaDisponible("S")
-                .stream()
-                .map(Camion::getPatente)
-                .toList();
+    public List<Camion> listarTodos() {
+        return camionRepository.findAll();
     }
 
-    /**
-     * Devuelve las patentes de todos los camiones no disponibles ('N')
-     */
-    public List<String> obtenerPatentesNoDisponibles() {
-        return camionRepository.findByEstaDisponible("N")
-                .stream()
-                .map(Camion::getPatente)
-                .toList();
-    }
-
-    /**
-     * Cambia el estado de un camión a no disponible ('N')
-     */
-    public void asignarNoDisponible(String patente) {
-        Camion camion = camionRepository.findById(patente)
+    public Camion obtenerPorPatente(String patente) {
+        return camionRepository.findById(patente)
                 .orElseThrow(() -> BaseException.notFoundById("Camion", patente));
-
-        if (!"N".equalsIgnoreCase(camion.getEstaDisponible())) {
-            camion.setEstaDisponible("N");
-            camionRepository.save(camion);
-        }
     }
 
-    /**
-     * Devuelve UN camión disponible ('S') que cumpla:
-     * capacidadPeso >= capacidadPesoReq
-     * capacidadVolumen >= capacidadVolumenReq
-     */
-    public CamionFiltradoDTO obtenerCamionDisponiblePorCapacidades(double capacidadPesoReq, double capacidadVolumenReq) {
+    public Camion crear(Camion camion) {
+        if (camion.getEstaDisponible() == null || camion.getEstaDisponible().isBlank()) {
+            camion.setEstaDisponible("S");
+        }
+        return camionRepository.save(camion);
+    }
+
+    public Camion actualizar(String patente, Camion datos) {
+        Camion existente = obtenerPorPatente(patente);
+        existente.setCapacidadPeso(datos.getCapacidadPeso());
+        existente.setCapacidadVolumen(datos.getCapacidadVolumen());
+        existente.setConsumoPromedio(datos.getConsumoPromedio());
+        existente.setEstaDisponible(datos.getEstaDisponible());
+        existente.setTarifa(datos.getTarifa());
+        return camionRepository.save(existente);
+    }
+
+    public void eliminar(String patente) {
+        Camion existente = obtenerPorPatente(patente);
+        camionRepository.delete(existente);
+    }
+
+    public List<Camion> listarDisponibles() {
+        return camionRepository.findByEstaDisponible("S");
+    }
+
+    public CamionFiltradoDTO obtenerCamionDisponiblePorCapacidades(double capacidadPesoReq,
+                                                                   double capacidadVolumenReq) {
+
         Camion cam = camionRepository
                 .findFirstByEstaDisponibleAndCapacidadPesoGreaterThanEqualAndCapacidadVolumenGreaterThanEqualOrderByPatenteAsc(
                         "S",
@@ -71,5 +70,11 @@ public class CamionService {
                 cam.getCapacidadVolumen(),
                 cam.getConsumoPromedio()
         );
+    }
+
+    public void asignarNoDisponible(String patente) {
+        Camion existente = obtenerPorPatente(patente);
+        existente.setEstaDisponible("N");
+        camionRepository.save(existente);
     }
 }

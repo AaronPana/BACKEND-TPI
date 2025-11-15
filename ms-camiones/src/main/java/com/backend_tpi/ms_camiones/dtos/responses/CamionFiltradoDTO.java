@@ -5,13 +5,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter @Setter
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class CamionFiltradoDTO {
-    private String patente;
-    private double capacidadPeso;
-    private double capacidadVolumen;
-    private double consumoPromedio;
-}
 
+    private String patente;
+    private Double capacidadPeso;
+    private Double capacidadVolumen;
+    private Double consumoPromedio;
+}

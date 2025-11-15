@@ -7,32 +7,44 @@ import com.backend_tpi.ms_camiones.repositories.TransportistaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class TransportistaService {
 
     @Autowired
     private TransportistaRepository transportistaRepository;
 
-    /** Devuelve solo el legajo */
-    public Integer obtenerSoloLegajo(Integer legajo) {
-        Transportista transportista = transportistaRepository.findById(legajo)
-                .orElseThrow(() -> BaseException.notFoundById("Transportista", legajo));
-        return transportista.getLegajo();
+    public List<Transportista> listarTodos() {
+        return transportistaRepository.findAll();
     }
 
-    /** Devuelve los datos completos del transportista */
-    public TransportistaResponse obtenerDatosPorLegajo(Integer legajo) {
-        Transportista t = transportistaRepository.findById(legajo)
+    public Transportista obtenerPorLegajo(Integer legajo) {
+        return transportistaRepository.findById(legajo)
                 .orElseThrow(() -> BaseException.notFoundById("Transportista", legajo));
-
-        return new TransportistaResponse(
-                t.getLegajo(),
-                t.getNombre(),
-                t.getApellido(),
-                t.getTelefono(),
-                t.getEmail(),
-                t.getDireccion()
-        );
     }
+
+    public Transportista crear(Transportista transportista) {
+        return transportistaRepository.save(transportista);
+    }
+
+    public Transportista actualizar(Integer legajo, Transportista datos) {
+        Transportista existente = obtenerPorLegajo(legajo);
+        existente.setNombre(datos.getNombre());
+        existente.setApellido(datos.getApellido());
+        existente.setTelefono(datos.getTelefono());
+        existente.setEmail(datos.getEmail());
+        existente.setDireccion(datos.getDireccion());
+        existente.setCiudad(datos.getCiudad());
+        return transportistaRepository.save(existente);
+    }
+
+    public void eliminar(Integer legajo) {
+        Transportista existente = obtenerPorLegajo(legajo);
+        transportistaRepository.delete(existente);
+    }
+
+
 }
+
 

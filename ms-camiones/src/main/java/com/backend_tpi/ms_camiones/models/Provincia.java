@@ -1,5 +1,6 @@
 package com.backend_tpi.ms_camiones.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,5 +23,6 @@ public class Provincia {
 
     // Relación uno a muchos con CIUDADES
     @OneToMany(mappedBy = "provincia", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties("provincia")
     private List<Ciudad> ciudades;
 }
