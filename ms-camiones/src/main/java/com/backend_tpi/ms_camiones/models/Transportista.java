@@ -6,7 +6,8 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "TRANSPORTISTAS")
-@Getter @Setter
+@Getter
+@Setter
 public class Transportista {
 
     @Id

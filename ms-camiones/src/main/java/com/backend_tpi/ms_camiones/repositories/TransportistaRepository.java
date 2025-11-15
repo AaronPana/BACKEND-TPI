@@ -10,7 +10,7 @@ import java.util.List;
 public interface TransportistaRepository extends JpaRepository<Transportista, Integer> {
 
     // Buscar transportistas por ciudad (id)
-    List<Transportista> findByCiudad_IdCiudad(Integer idCiudad);
+    List<Transportista> findByCiudad_IdCiudad(Long idCiudad);
 
     // Búsqueda simple por nombre/apellido (case-insensitive)
     List<Transportista> findByNombreIgnoreCase(String nombre);

@@ -8,7 +8,8 @@ import java.math.BigDecimal;
 
 @Entity
 @Table(name = "TARIFAS")
-@Getter @Setter
+@Getter
+@Setter
 public class Tarifa {
 
     @Id

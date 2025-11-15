@@ -1,13 +1,14 @@
 package com.backend_tpi.ms_camiones.models;
 
-
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import lombok.Data;
-
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "CIUDADES")
-@Data
+@Getter
+@Setter
 public class Ciudad {
 
     @Id
@@ -15,11 +16,12 @@ public class Ciudad {
     @Column(name = "ID_CIUDAD")
     private Long idCiudad;
 
-    @Column(name = "NOMBRE", nullable = false, length = 80)
+    @Column(name = "NOMBRE", nullable = false, length = 100)
     private String nombre;
 
-    // Relación muchos a uno con PROVINCIAS
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "ID_PROVINCIA", nullable = false)
+    @JsonIgnoreProperties("ciudades")  // cuando serializa provincia, NO incluye provincia.ciudades
     private Provincia provincia;
 }
+
