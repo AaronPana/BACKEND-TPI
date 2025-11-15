@@ -2,10 +2,13 @@ package com.backend_tpi.ms_rutas.services;
 
 import com.backend_tpi.ms_rutas.constants.EstadoTramo;
 import com.backend_tpi.ms_rutas.constants.TipoTramo;
+import com.backend_tpi.ms_rutas.dtos.requests.TramoRequestDTO;
 import com.backend_tpi.ms_rutas.dtos.responses.HojaDeRutaDTO;
 import com.backend_tpi.ms_rutas.dtos.responses.RutaSeleccionadaDTO;
 import com.backend_tpi.ms_rutas.dtos.responses.TramoDTO;
 import com.backend_tpi.ms_rutas.exceptions.BaseException;
+import com.backend_tpi.ms_rutas.external.clients.CamionesApiClient;
+import com.backend_tpi.ms_rutas.external.dtos.responses.CamionDTO;
 import com.backend_tpi.ms_rutas.mappers.TramoMapper;
 import com.backend_tpi.ms_rutas.models.Tramo;
 import com.backend_tpi.ms_rutas.repositories.TramoRepository;
@@ -18,11 +21,14 @@ import java.util.Optional;
 @Service
 public class TramoService {
 
-    private TramoRepository tramoRepository;
+    private final TramoRepository tramoRepository;
+    private final CamionesApiClient camionesApiClient;
 
-    public TramoService(TramoRepository tramoRepository) {
+    public TramoService(TramoRepository tramoRepository, CamionesApiClient camionesApiClient) {
         this.tramoRepository = tramoRepository;
+        this.camionesApiClient = camionesApiClient;
     }
+
 
     public List<Tramo> findAll() {
         return tramoRepository.findAll();
@@ -33,22 +39,30 @@ public class TramoService {
                 .orElseThrow(() -> BaseException.notFoundById("Tramo", idTramo));
     }
 
-    public Tramo create(Tramo tramo) {
-        if (tramo.getIdTramo() != null) {
-            throw BaseException.badRequest("No se debe especificar un ID al crear un tramo nuevo");
-        }
-        // Como vamos a manejar el tema de los estados al crear un nuevo tramo?  Se usa ASIGNADO
-        // Al crear un tramo los datos de creacion son:
-        // FechaHoraInicioEstimada
-        // FechaHoraFinEstimada
-        // costoEstimado (Esto deberia ser de acuerdo al tiempo?)
-        // direccionOrigen
-        // direccionDestino
-        // estado con el predeterminado
-        // tipoTramo?
-        //
+
+    public Tramo create(TramoRequestDTO request) {
+
+        Tramo tramo = new Tramo();
+        tramo.setDireccionOrigen(request.getDireccionOrigen());
+        tramo.setDireccionDestino(request.getDireccionDestino());
+        tramo.setIdCiudadOrigen(request.getIdCiudadOrigen());
+        tramo.setIdCiudadDestino(request.getIdCiudadDestino());
+        tramo.setIdTraslado(request.getIdTraslado());
+
+        CamionDTO camion = camionesApiClient.getCamionDisponible(
+                request.getPesoContenedor(),
+                request.getVolumenContenedor()
+        );
+        tramo.setPatenteCamion(camion.getPatente());
+
+        tramo.setEstadoTramo(EstadoTramo.ASIGNADO);
+
+        tramo.setIdTraslado(request.getIdTraslado());
+        tramo.setTipoTramo(TipoTramo.ORIGEN_DESTINO);
+        tramo.setLegajoTransportista(134275L);
 
         return tramoRepository.save(tramo);
+
     }
 
     public void delete(Long idTramo) {
@@ -56,11 +70,6 @@ public class TramoService {
                 .orElseThrow(() -> BaseException.notFoundById("Tramo", idTramo));
         tramoRepository.delete(tramo);
     }
-
-    public void asignarCamionDisponible() {
-
-    }
-
 
     public EstadoTramo obtenerEstadoTramo(Long idTramo) {
         Tramo tramo = findById(idTramo);
@@ -99,6 +108,11 @@ public class TramoService {
 
         if (tramo.getFechaHoraFinReal() != null) {
             throw BaseException.badRequest("El tramo ya tiene una fecha de fin real asignada.");
+        }
+
+        if (tramo.getFechaHoraInicioReal() == null) {
+            throw BaseException.badRequest("No se puede asignar una fecha de fin " +
+                    "si no esta asignada la fecha de inico");
         }
         tramo.setFechaHoraFinReal(fechaFinReal);
         tramo.setEstadoTramo(EstadoTramo.FINALIZADO);
