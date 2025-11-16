@@ -53,13 +53,15 @@ public class CamionController {
 
     @GetMapping("/filtrar")
     public ResponseEntity<CamionFiltradoDTO> obtenerCamionPorCapacidad(
-            @RequestParam(name = "capacidadPeso") double capacidadPeso,
-            @RequestParam(name = "capacidadVolumen") double capacidadVolumen
+            @RequestParam(name = "capacidadPeso") Double capacidadPeso,
+            @RequestParam(name = "capacidadVolumen") Double capacidadVolumen
     ) {
-        CamionFiltradoDTO dto = camionService.obtenerCamionDisponiblePorCapacidades(capacidadPeso, capacidadVolumen);
+        CamionFiltradoDTO dto = camionService.obtenerCamionDisponiblePorCapacidades(
+                capacidadPeso,
+                capacidadVolumen
+        );
         return ResponseEntity.ok(dto);
     }
-
     @PutMapping("/{patente}/asignar")
     public ResponseEntity<Void> asignarNoDisponible(@PathVariable String patente) {
         camionService.asignarNoDisponible(patente);

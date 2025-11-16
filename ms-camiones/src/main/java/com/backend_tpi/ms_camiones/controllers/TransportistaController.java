@@ -47,7 +47,12 @@ public class TransportistaController {
         return ResponseEntity.noContent().build();
     }
 
-
+    // NUEVO: devuelve un legajo aleatorio
+    @GetMapping("/legajo")
+    public ResponseEntity<Map<String, Integer>> obtenerLegajoAleatorio() {
+        Integer legajo = transportistaService.obtenerLegajoAleatorio();
+        return ResponseEntity.ok(Map.of("legajo", legajo));
+    }
 }
 
 
