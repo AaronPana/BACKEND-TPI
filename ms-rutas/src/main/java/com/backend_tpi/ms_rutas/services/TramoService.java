@@ -78,6 +78,14 @@ public class TramoService {
         TransportitaDTO transportista = camionesApiClient.obtenerLegajoTransportista();
         tramo.setLegajoTransportista(transportista.getLegajo());
 
+        //crear estadia si poseo un idDepositoOrigen o Destino
+        if(request.getIdDepositoOrigen() != null){
+
+        }
+        if (request.getIdDepositoDestino() != null){
+
+        }
+
         return tramoRepository.save(tramo);
 
     }
@@ -91,6 +99,11 @@ public class TramoService {
     public Double calcularCostoReal(Double consumoPromedio, Double distanciaReal){
         return (consumoPromedio * costoCombustible) + distanciaReal ;
     }
+
+
+    // La fecha inicioEstimada seria
+
+    // La fecha finalEstimada se calcula con el tiempo que devuelve osrm
 
     /*
      public Tramo guardarRutaSeleccionada(RutaSeleccionadaDTO dto) {

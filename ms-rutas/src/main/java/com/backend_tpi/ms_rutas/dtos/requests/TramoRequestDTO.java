@@ -16,4 +16,6 @@ public class TramoRequestDTO {
     private Long legajoTransportista;
     private Double pesoContenedor;
     private Double volumenContenedor;
+    private Long idDepositoOrigen;
+    private Long idDepositoDestino;
 }

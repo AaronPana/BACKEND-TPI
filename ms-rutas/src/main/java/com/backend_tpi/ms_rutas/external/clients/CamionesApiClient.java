@@ -47,8 +47,8 @@ public class CamionesApiClient {
     }
 
     public TransportitaDTO obtenerLegajoTransportista() {
-        return camionesRestClient.put()
-                .uri("/transportisata/legajo")
+        return camionesRestClient.get()
+                .uri("/transportistas/legajo")
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError,
                         (req, res) -> { throw BaseException.badRequest("Error al obtener un legajo de transportista"); })

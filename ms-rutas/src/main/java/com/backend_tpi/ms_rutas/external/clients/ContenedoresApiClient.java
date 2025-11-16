@@ -1,17 +1,35 @@
 package com.backend_tpi.ms_rutas.external.clients;
 
+import com.backend_tpi.ms_rutas.exceptions.BaseException;
+import com.backend_tpi.ms_rutas.external.dtos.responses.CostoEstadiaDTO;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
 @Component
 public class ContenedoresApiClient {
 
-  private final RestClient contenedoresRestClient;
+    private final RestClient contenedoresRestClient;
 
-  public ContenedoresApiClient(@Qualifier("contenedoresRestClient") RestClient contenedoresRestClient) {
-    this.contenedoresRestClient = contenedoresRestClient;
-  }
+    public ContenedoresApiClient(@Qualifier("contenedoresRestClient") RestClient contenedoresRestClient) {
+        this.contenedoresRestClient = contenedoresRestClient;
+    }
+
+    public CostoEstadiaDTO obtenerCostoEstadiaEstimada(Long idContenedor) {
+
+        return contenedoresRestClient.get()
+                .uri("/estadias/{id}/costo-estadia-estimada", idContenedor)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                    throw BaseException.notFound("No se encontró costo estimado para estadia " + idContenedor);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw BaseException.internalError("Error al obtener costo estimado de estadía");
+                })
+                .body(CostoEstadiaDTO.class);
+    }
+
 
 //  En caso de necesitar una api key, se puede configurar
 //  en application-local.properties y usar acá
