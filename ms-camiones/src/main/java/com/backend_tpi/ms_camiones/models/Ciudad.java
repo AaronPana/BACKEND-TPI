@@ -19,6 +19,11 @@ public class Ciudad {
     @Column(name = "NOMBRE", nullable = false, length = 100)
     private String nombre;
 
+    @Column(name = "LATITUD", columnDefinition= "DECIMAL(12,2)")
+    private Double latitud;
+
+    @Column(name = "LONGITUD", columnDefinition= "DECIMAL(12,2)")
+    private Double longitud;
     @ManyToOne(optional = false)
     @JoinColumn(name = "ID_PROVINCIA", nullable = false)
     @JsonIgnoreProperties("ciudades")  // cuando serializa provincia, NO incluye provincia.ciudades

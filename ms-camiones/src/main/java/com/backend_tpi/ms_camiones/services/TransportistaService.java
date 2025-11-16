@@ -6,6 +6,7 @@ import com.backend_tpi.ms_camiones.models.Transportista;
 import com.backend_tpi.ms_camiones.repositories.TransportistaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.backend_tpi.ms_camiones.exceptions.BaseException;
 
 import java.util.List;
 
@@ -22,6 +23,17 @@ public class TransportistaService {
     public Transportista obtenerPorLegajo(Integer legajo) {
         return transportistaRepository.findById(legajo)
                 .orElseThrow(() -> BaseException.notFoundById("Transportista", legajo));
+    }
+
+    public Integer obtenerLegajoAleatorio() {
+        var transportistas = transportistaRepository.findAll();
+
+        if (transportistas.isEmpty()) {
+            throw BaseException.badRequest("No hay transportistas cargados en la base");
+        }
+
+        int indexAleatorio = (int) (Math.random() * transportistas.size());
+        return transportistas.get(indexAleatorio).getLegajo();
     }
 
     public Transportista crear(Transportista transportista) {
