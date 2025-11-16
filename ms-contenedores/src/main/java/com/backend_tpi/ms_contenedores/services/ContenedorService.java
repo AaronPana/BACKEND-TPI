@@ -8,10 +8,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.backend_tpi.ms_contenedores.constants.EstadoContenedor;
+import com.backend_tpi.ms_contenedores.dtos.CoordenadasDTO;
 import com.backend_tpi.ms_contenedores.dtos.EstadoDTO;
 import com.backend_tpi.ms_contenedores.dtos.PesoVolumenDTO;
 import com.backend_tpi.ms_contenedores.models.Contenedores;
 import com.backend_tpi.ms_contenedores.repositories.ContenedorRepository;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class ContenedorService {
@@ -76,5 +79,20 @@ public class ContenedorService {
                     HttpStatus.NOT_FOUND, "Contenedor no encontrado"));
 
     return new EstadoDTO(contenedor.getEstadoContenedores().name());
+    }
+
+    @Transactional
+    public void actualizarCoordenadas(Long id, CoordenadasDTO coordenadas) {
+        if (coordenadas == null || coordenadas.getLatitud() == null || coordenadas.getLongitud() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Coordenadas inválidas");
+        }
+        Contenedores contenedor = contenedorRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Contenedor no encontrado"));
+        
+        contenedor.setLatitud(coordenadas.getLatitud());
+        contenedor.setLongitud(coordenadas.getLongitud());
+
+        contenedorRepository.save(contenedor);
     }
 }
