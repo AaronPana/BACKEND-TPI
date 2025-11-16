@@ -15,4 +15,5 @@ public class CamionFiltradoDTO {
     private Double capacidadPeso;
     private Double capacidadVolumen;
     private Double consumoPromedio;
+    private Double costoXKilometro;
 }

@@ -50,26 +50,28 @@ public class CamionService {
         return camionRepository.findByEstaDisponible("S");
     }
 
-    public CamionFiltradoDTO obtenerCamionDisponiblePorCapacidades(double capacidadPesoReq,
-                                                                   double capacidadVolumenReq) {
+        public CamionFiltradoDTO obtenerCamionDisponiblePorCapacidades(double capacidadPesoReq,
+                                                                       double capacidadVolumenReq) {
 
-        Camion cam = camionRepository
-                .findFirstByEstaDisponibleAndCapacidadPesoGreaterThanEqualAndCapacidadVolumenGreaterThanEqualOrderByPatenteAsc(
-                        "S",
-                        capacidadPesoReq,
-                        capacidadVolumenReq
-                )
-                .orElseThrow(() -> BaseException.notFoundById(
-                        "Camion disponible con las capacidades mínimas",
-                        String.format("peso >= %.2f volumen >= %.2f", capacidadPesoReq, capacidadVolumenReq)
-                ));
+            Camion cam = camionRepository
+                    .findFirstByEstaDisponibleAndCapacidadPesoGreaterThanEqualAndCapacidadVolumenGreaterThanEqualOrderByPatenteAsc(
+                            "S",
+                            capacidadPesoReq,
+                            capacidadVolumenReq
+                    )
+                    .orElseThrow(() -> BaseException.notFoundById(
+                            "Camion disponible con las capacidades mínimas",
+                            String.format("peso >= %.2f volumen >= %.2f", capacidadPesoReq, capacidadVolumenReq)
+                    ));
 
-        return new CamionFiltradoDTO(
-                cam.getPatente(),
-                cam.getCapacidadPeso(),
-                cam.getCapacidadVolumen(),
-                cam.getConsumoPromedio()
-        );
+            return new CamionFiltradoDTO(
+                    cam.getPatente(),
+                    cam.getCapacidadPeso(),
+                    cam.getCapacidadVolumen(),
+                    cam.getConsumoPromedio(),
+                    cam.getTarifa().getCostoXKilometro()   // 👈 acá traemos la tarifa
+            );
+
     }
 
     public void asignarNoDisponible(String patente) {
