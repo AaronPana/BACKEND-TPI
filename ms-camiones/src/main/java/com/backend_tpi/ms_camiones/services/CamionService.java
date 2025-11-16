@@ -74,9 +74,17 @@ public class CamionService {
 
     }
 
-    public void asignarNoDisponible(String patente) {
+    // Cambia la disponibilidad: si está 'S' pasa a 'N' y si no, pasa a 'S'
+    public void toggleDisponibilidad(String patente) {
         Camion existente = obtenerPorPatente(patente);
-        existente.setEstaDisponible("N");
+
+        String estadoActual = existente.getEstaDisponible();
+        if ("S".equalsIgnoreCase(estadoActual)) {
+            existente.setEstaDisponible("N");
+        } else {
+            existente.setEstaDisponible("S");
+        }
+
         camionRepository.save(existente);
     }
 }

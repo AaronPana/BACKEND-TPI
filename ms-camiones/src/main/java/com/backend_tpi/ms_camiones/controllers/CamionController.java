@@ -62,9 +62,9 @@ public class CamionController {
         );
         return ResponseEntity.ok(dto);
     }
-    @PutMapping("/{patente}/asignar")
+    @PutMapping("/{patente}/estado")
     public ResponseEntity<Void> asignarNoDisponible(@PathVariable String patente) {
-        camionService.asignarNoDisponible(patente);
+        camionService.toggleDisponibilidad(patente);
         return ResponseEntity.noContent().build();
     }
 }
