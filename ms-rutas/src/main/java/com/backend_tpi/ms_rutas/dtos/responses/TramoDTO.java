@@ -16,6 +16,8 @@ public class TramoDTO {
     private String direccionDestino;
     private LocalDateTime fechaInicioEstimada;
     private LocalDateTime fechaFinEstimada;
+    private LocalDateTime fechaInicioReal;
+    private LocalDateTime fechaFinReal;
     private String estadoTramo;
     private String tipoTramo;
     private String patenteCamion;

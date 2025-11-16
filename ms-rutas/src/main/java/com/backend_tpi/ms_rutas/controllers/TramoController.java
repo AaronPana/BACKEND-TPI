@@ -92,15 +92,4 @@ public class TramoController {
         return tramoService.getHojaDeRuta(idTraslado);
     }
 
-    @GetMapping("/disponible")
-    public CamionDTO testCamionDisponible(
-            @RequestParam Double peso,
-            @RequestParam Double volumen) {
-
-        return camionesApiClient.getCamionDisponible(peso, volumen);
-    }
-
-
-
-
 }

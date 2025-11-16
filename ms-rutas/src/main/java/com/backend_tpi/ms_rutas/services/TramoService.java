@@ -9,9 +9,12 @@ import com.backend_tpi.ms_rutas.dtos.responses.TramoDTO;
 import com.backend_tpi.ms_rutas.exceptions.BaseException;
 import com.backend_tpi.ms_rutas.external.clients.CamionesApiClient;
 import com.backend_tpi.ms_rutas.external.dtos.responses.CamionDTO;
+import com.backend_tpi.ms_rutas.external.dtos.responses.TransportitaDTO;
 import com.backend_tpi.ms_rutas.mappers.TramoMapper;
 import com.backend_tpi.ms_rutas.models.Tramo;
 import com.backend_tpi.ms_rutas.repositories.TramoRepository;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -23,6 +26,9 @@ public class TramoService {
 
     private final TramoRepository tramoRepository;
     private final CamionesApiClient camionesApiClient;
+
+    @Value("${costoCombustible}")
+    private Double costoCombustible;
 
     public TramoService(TramoRepository tramoRepository, CamionesApiClient camionesApiClient) {
         this.tramoRepository = tramoRepository;
@@ -48,22 +54,81 @@ public class TramoService {
         tramo.setIdCiudadOrigen(request.getIdCiudadOrigen());
         tramo.setIdCiudadDestino(request.getIdCiudadDestino());
         tramo.setIdTraslado(request.getIdTraslado());
+        tramo.setEstadoTramo(EstadoTramo.ASIGNADO);
+        tramo.setIdTraslado(request.getIdTraslado());
+        tramo.setTipoTramo(TipoTramo.ORIGEN_DESTINO);
+
+        //Buscar Camion y lo asigna como no disponible
 
         CamionDTO camion = camionesApiClient.getCamionDisponible(
                 request.getPesoContenedor(),
                 request.getVolumenContenedor()
         );
+
         tramo.setPatenteCamion(camion.getPatente());
+        camionesApiClient.asignarNoDisponible(camion.getPatente());
 
-        tramo.setEstadoTramo(EstadoTramo.ASIGNADO);
+        //Calculo de Costos estimado
+        Double distanciaPorAhora = 24000.0;
+        tramo.setCostoEstimado(
+                calcularCostoEstimado(camion.getConsumoPromedio(), distanciaPorAhora)
+        );
 
-        tramo.setIdTraslado(request.getIdTraslado());
-        tramo.setTipoTramo(TipoTramo.ORIGEN_DESTINO);
-        tramo.setLegajoTransportista(134275L);
+        //Busqueda de transportista
+        TransportitaDTO transportista = camionesApiClient.obtenerLegajoTransportista();
+        tramo.setLegajoTransportista(transportista.getLegajo());
+
+        //crear estadia si poseo un idDepositoOrigen o Destino
+        if(request.getIdDepositoOrigen() != null){
+
+        }
+        if (request.getIdDepositoDestino() != null){
+
+        }
 
         return tramoRepository.save(tramo);
 
     }
+
+    public Double calcularCostoEstimado(Double consumoPromedio, Double distanciaTotal) {
+        return (consumoPromedio * costoCombustible) + distanciaTotal;
+    }
+
+    //Hay que ver que mas hacer aca porque sino seria siempre el mismo costo
+
+    public Double calcularCostoReal(Double consumoPromedio, Double distanciaReal){
+        return (consumoPromedio * costoCombustible) + distanciaReal ;
+    }
+
+
+    // La fecha inicioEstimada seria
+
+    // La fecha finalEstimada se calcula con el tiempo que devuelve osrm
+
+    /*
+     public Tramo guardarRutaSeleccionada(RutaSeleccionadaDTO dto) {
+        Tramo tramo = new Tramo();
+
+        tramo.setDireccionOrigen(dto.getDireccionOrigen());
+        tramo.setDireccionDestino(dto.getDireccionDestino());
+        tramo.setCostoEstimado(dto.getCostoEstimado());
+        tramo.setFechaHoraInicioEstimada(LocalDateTime.now());
+        tramo.setEstadoTramo(EstadoTramo.ASIGNADO);
+        tramo.setTipoTramo(TipoTramo.valueOf(dto.getTipoTramo())); // Ej: ORIGEN_DESTINO
+
+        tramo.setPatenteCamion(dto.getPatenteCamion());
+        camionesApiClient.asignarNoDisponible(dto.getPatenteCamion());
+
+        tramo.setLegajoTransportista(dto.getLegajoTransportista());
+        tramo.setIdDepositoOrigen(dto.getIdDepositoOrigen());
+        tramo.setIdDepositoDestino(dto.getIdDepositoDestino());
+        tramo.setIdTraslado(dto.getIdTraslado());
+        tramo.setIdCiudadOrigen(dto.getIdCiudadOrigen());
+        tramo.setIdCiudadDestino(dto.getIdCiudadDestino());
+
+        return tramoRepository.save(tramo);
+    }
+    * */
 
     public void delete(Long idTramo) {
         Tramo tramo = tramoRepository.findById(idTramo)
@@ -92,6 +157,9 @@ public class TramoService {
         if (tramo.getFechaHoraInicioReal() != null) {
             throw BaseException.badRequest("El tramo ya tiene una fecha de inicio real asignada.");
         }
+        if (fechaInicioReal.isBefore(LocalDateTime.now())) {
+            throw BaseException.badRequest("La fecha no puede ser anterior a la actual");
+        }
 
         // Asigna la fecha real de inicio y cambia el estado
         tramo.setFechaHoraInicioReal(fechaInicioReal);
@@ -99,7 +167,6 @@ public class TramoService {
 
         Tramo tramoActualizado = tramoRepository.save(tramo);
 
-        // Retorna el DTO
         return TramoMapper.toDTO(tramoActualizado);
     }
 
@@ -114,34 +181,16 @@ public class TramoService {
             throw BaseException.badRequest("No se puede asignar una fecha de fin " +
                     "si no esta asignada la fecha de inico");
         }
+        if (fechaFinReal.isBefore(LocalDateTime.now())){
+            throw BaseException.badRequest("La fecha no puede ser anterior a la actual");
+        }
         tramo.setFechaHoraFinReal(fechaFinReal);
         tramo.setEstadoTramo(EstadoTramo.FINALIZADO);
 
         Tramo tramoActualizado = tramoRepository.save(tramo);
         return TramoMapper.toDTO(tramoActualizado);
-
     }
 
-    public Tramo guardarRutaSeleccionada(RutaSeleccionadaDTO dto) {
-        Tramo tramo = new Tramo();
-
-        tramo.setDireccionOrigen(dto.getDireccionOrigen());
-        tramo.setDireccionDestino(dto.getDireccionDestino());
-        tramo.setCostoEstimado(dto.getCostoEstimado());
-        tramo.setFechaHoraInicioEstimada(LocalDateTime.now());
-        tramo.setEstadoTramo(EstadoTramo.ASIGNADO);
-        tramo.setTipoTramo(TipoTramo.valueOf(dto.getTipoTramo())); // Ej: ORIGEN_DESTINO
-
-        tramo.setPatenteCamion(dto.getPatenteCamion());
-        tramo.setLegajoTransportista(dto.getLegajoTransportista());
-        tramo.setIdDepositoOrigen(dto.getIdDepositoOrigen());
-        tramo.setIdDepositoDestino(dto.getIdDepositoDestino());
-        tramo.setIdTraslado(dto.getIdTraslado());
-        tramo.setIdCiudadOrigen(dto.getIdCiudadOrigen());
-        tramo.setIdCiudadDestino(dto.getIdCiudadDestino());
-
-        return tramoRepository.save(tramo);
-    }
 
     public HojaDeRutaDTO getHojaDeRuta(Long idTraslado) {
         List<Tramo> tramos = tramoRepository.findByIdTrasladoOrderByIdTramoAsc(idTraslado);
