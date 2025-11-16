@@ -13,6 +13,7 @@ public class TramoRequestDTO {
     private String direccionDestino;
     private Long idCiudadDestino;
     private Long idTraslado;
+    private Long legajoTransportista;
     private Double pesoContenedor;
     private Double volumenContenedor;
 }

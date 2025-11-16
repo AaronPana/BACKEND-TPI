@@ -2,6 +2,7 @@ package com.backend_tpi.ms_rutas.external.clients;
 
 import com.backend_tpi.ms_rutas.exceptions.BaseException;
 import com.backend_tpi.ms_rutas.external.dtos.responses.CamionDTO;
+import com.backend_tpi.ms_rutas.external.dtos.responses.TransportitaDTO;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
@@ -19,7 +20,7 @@ public class CamionesApiClient {
     public CamionDTO getCamionDisponible(Double Peso, Double Volumen) {
         return camionesRestClient.get()
                 .uri(uriBuilder -> uriBuilder
-                        .path("/camiones/disponible")
+                        .path("/camiones/filtrar")
                         .queryParam("capacidadPeso", Peso)
                         .queryParam("capacidadVolumen", Volumen)
                         .build())
@@ -33,8 +34,27 @@ public class CamionesApiClient {
                 })
                 .body(CamionDTO.class);
     }
-//  En caso de necesitar una api key, se puede configurar
-//  en application-local.properties y usar acá
-//  @Value("${api.ms-camiones.key}")
-//  private String apiKey;
+
+    public void asignarNoDisponible(String patente) {
+        camionesRestClient.put()
+                .uri("/camiones/{patente}/asignar", patente)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError,
+                        (req, res) -> { throw BaseException.badRequest("Error al marcar camión como no disponible"); })
+                .onStatus(HttpStatusCode::is5xxServerError,
+                        (req, res) -> { throw BaseException.internalError("Error interno al modificar estado del camión"); })
+                .toBodilessEntity(); // PUT sin body
+    }
+
+    public TransportitaDTO obtenerLegajoTransportista() {
+        return camionesRestClient.put()
+                .uri("/transportisata/legajo")
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError,
+                        (req, res) -> { throw BaseException.badRequest("Error al obtener un legajo de transportista"); })
+                .onStatus(HttpStatusCode::is5xxServerError,
+                        (req, res) -> { throw BaseException.internalError("Error interno al obtener un legajo de transportista"); })
+                .body(TransportitaDTO.class);
+    }
+
 }
