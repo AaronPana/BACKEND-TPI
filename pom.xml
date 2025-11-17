@@ -14,6 +14,7 @@
     <modules>
         <module>ms-camiones</module>
         <module>ms-contenedores</module>
+        <module>ms-locations</module>
         <module>ms-rutas</module>
         <module>ms-traslados</module>
     </modules>
