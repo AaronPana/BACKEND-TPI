@@ -20,7 +20,7 @@ public class CacheRutaService {
   private static final long CACHE_TTL_MINUTES = 30;
 
   public String getNextIdConsulta() {
-    return "rutas-" + this.contadorIdConsultas.getAndIncrement();
+    return String.valueOf(this.contadorIdConsultas.getAndIncrement());
   }
 
   public void storeRouteQuery(String consultaId, RutaDtoRes response) {

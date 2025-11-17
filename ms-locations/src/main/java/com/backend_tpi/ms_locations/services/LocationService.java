@@ -188,7 +188,7 @@ public class LocationService {
     path.add("B");
 
     return new RutaAlternativaDtoRes(
-        "alt-" + idAlternativa,
+        String.valueOf(idAlternativa),
         path,
         rutaOsrmDto.getRoutes().getFirst().getDistance(),
         rutaOsrmDto.getRoutes().getFirst().getDuration(),
