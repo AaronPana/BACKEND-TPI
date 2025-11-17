@@ -74,15 +74,15 @@ public class TramoService {
         TransportitaDTO transportista = camionesApiClient.obtenerLegajoTransportista();
         tramo.setLegajoTransportista(transportista.getLegajo());
 
-        CostoEstadiaDTO costoEstadia = null;
+
         //crear estadia si poseo un idDepositoOrigen o Destino
-        if(request.getIdDepositoOrigen() != null){
+        /*if(request.getIdDepositoOrigen() != null){
             contenedoresApiClient.crearEstadia(
                     request.getIdContenedor(),
                     request.getIdTraslado(),
                     request.getIdDepositoOrigen(),
                     LocalDateTime.now() );
-        }
+        }*/
 
         //Calculo de Costos estimado
         Double distanciaPorAhora = 24000.0;

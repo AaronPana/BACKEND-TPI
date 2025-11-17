@@ -2,6 +2,7 @@ package com.backend_tpi.ms_rutas.external.clients;
 
 import com.backend_tpi.ms_rutas.exceptions.BaseException;
 import com.backend_tpi.ms_rutas.external.dtos.responses.CostoEstadiaDTO;
+import com.backend_tpi.ms_rutas.external.dtos.responses.EstadiaRequestDTO;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
@@ -33,17 +34,26 @@ public class ContenedoresApiClient {
                 .body(CostoEstadiaDTO.class);
     }*/
 
-    public void crearEstadia(Long idContenedor, Long idTraslado, Long idDeposito, LocalDateTime fechaInicio){
+    public void crearEstadia(Long idContenedor, Long idTraslado, Long idDeposito, LocalDateTime fechaInicio) {
+
+        EstadiaRequestDTO body = new EstadiaRequestDTO(
+                idContenedor,
+                idTraslado,
+                idDeposito,
+                fechaInicio
+        );
+
         contenedoresRestClient.post()
-                .uri("/estadias/", idDeposito, idContenedor, idTraslado, fechaInicio)
+                .uri("/estadias")
+                .body(body)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw BaseException.notFound("No se encontró costo estimado para estadia " + idContenedor);
+                    throw BaseException.badRequest("Error al crear la estadía para contenedor " + idContenedor);
                 })
                 .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
-                    throw BaseException.internalError("Error al obtener costo estimado de estadía");
+                    throw BaseException.internalError("Error interno al crear estadía");
                 })
-                .toBodilessEntity();;
+                .toBodilessEntity(); // no devuelve nada
     }
 
 
