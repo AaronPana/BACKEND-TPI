@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
+import java.time.LocalDateTime;
+
 @Component
 public class ContenedoresApiClient {
 
@@ -16,10 +18,24 @@ public class ContenedoresApiClient {
         this.contenedoresRestClient = contenedoresRestClient;
     }
 
+    /*
     public CostoEstadiaDTO obtenerCostoEstadiaEstimada(Long idContenedor) {
 
         return contenedoresRestClient.get()
                 .uri("/estadias/{id}/costo-estadia-estimada", idContenedor)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                    throw BaseException.notFound("No se encontró costo estimado para estadia " + idContenedor);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw BaseException.internalError("Error al obtener costo estimado de estadía");
+                })
+                .body(CostoEstadiaDTO.class);
+    }*/
+
+    public CostoEstadiaDTO crearEstadia(Long idContenedor, Long idTraslado, Long idDeposito, LocalDateTime fechaInicio){
+        return contenedoresRestClient.post()
+                .uri("/estadias/", idDeposito, idContenedor, idTraslado, fechaInicio)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
                     throw BaseException.notFound("No se encontró costo estimado para estadia " + idContenedor);

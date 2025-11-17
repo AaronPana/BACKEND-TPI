@@ -14,6 +14,8 @@ public class TramoMapper {
         dto.setDireccionDestino(tramo.getDireccionDestino());
         dto.setFechaInicioEstimada(tramo.getFechaHoraInicioEstimada());
         dto.setFechaFinEstimada(tramo.getFechaHoraFinEstimada());
+        dto.setFechaInicioReal(tramo.getFechaHoraInicioReal());
+        dto.setFechaFinReal(tramo.getFechaHoraFinReal());
         dto.setEstadoTramo(tramo.getEstadoTramo().name());
         dto.setTipoTramo(tramo.getTipoTramo().name());
         dto.setPatenteCamion(tramo.getPatenteCamion());

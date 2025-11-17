@@ -8,7 +8,9 @@ import com.backend_tpi.ms_rutas.dtos.responses.RutaSeleccionadaDTO;
 import com.backend_tpi.ms_rutas.dtos.responses.TramoDTO;
 import com.backend_tpi.ms_rutas.exceptions.BaseException;
 import com.backend_tpi.ms_rutas.external.clients.CamionesApiClient;
+import com.backend_tpi.ms_rutas.external.clients.ContenedoresApiClient;
 import com.backend_tpi.ms_rutas.external.dtos.responses.CamionDTO;
+import com.backend_tpi.ms_rutas.external.dtos.responses.CostoEstadiaDTO;
 import com.backend_tpi.ms_rutas.external.dtos.responses.TransportitaDTO;
 import com.backend_tpi.ms_rutas.mappers.TramoMapper;
 import com.backend_tpi.ms_rutas.models.Tramo;
@@ -26,13 +28,15 @@ public class TramoService {
 
     private final TramoRepository tramoRepository;
     private final CamionesApiClient camionesApiClient;
+    private final ContenedoresApiClient contenedoresApiClient;
 
     @Value("${costoCombustible}")
     private Double costoCombustible;
 
-    public TramoService(TramoRepository tramoRepository, CamionesApiClient camionesApiClient) {
+    public TramoService(TramoRepository tramoRepository, CamionesApiClient camionesApiClient, ContenedoresApiClient contenedoresApiClient) {
         this.tramoRepository = tramoRepository;
         this.camionesApiClient = camionesApiClient;
+        this.contenedoresApiClient = contenedoresApiClient;
     }
 
 
@@ -59,46 +63,41 @@ public class TramoService {
         tramo.setTipoTramo(TipoTramo.ORIGEN_DESTINO);
 
         //Buscar Camion y lo asigna como no disponible
-
         CamionDTO camion = camionesApiClient.getCamionDisponible(
                 request.getPesoContenedor(),
                 request.getVolumenContenedor()
         );
-
         tramo.setPatenteCamion(camion.getPatente());
         camionesApiClient.asignarNoDisponible(camion.getPatente());
-
-        //Calculo de Costos estimado
-        Double distanciaPorAhora = 24000.0;
-        tramo.setCostoEstimado(
-                calcularCostoEstimado(camion.getConsumoPromedio(), distanciaPorAhora)
-        );
 
         //Busqueda de transportista
         TransportitaDTO transportista = camionesApiClient.obtenerLegajoTransportista();
         tramo.setLegajoTransportista(transportista.getLegajo());
 
+        CostoEstadiaDTO costoEstadia = null;
         //crear estadia si poseo un idDepositoOrigen o Destino
         if(request.getIdDepositoOrigen() != null){
-
+            contenedoresApiClient.crearEstadia(
+                    request.getIdContenedor(),
+                    request.getIdTraslado(),
+                    request.getIdDepositoOrigen(),
+                    LocalDateTime.now() );
         }
-        if (request.getIdDepositoDestino() != null){
 
-        }
+        //Calculo de Costos estimado
+        Double distanciaPorAhora = 24000.0;
+        tramo.setCostoEstimado(
+                calcularCostoEstimado(camion.getConsumoPromedio(), distanciaPorAhora, camion.getCostoXKilometro())
+        );
 
         return tramoRepository.save(tramo);
 
     }
 
-    public Double calcularCostoEstimado(Double consumoPromedio, Double distanciaTotal) {
-        return (consumoPromedio * costoCombustible) + distanciaTotal;
+    public Double calcularCostoEstimado(Double consumoPromedio, Double distanciaTotal, Double costoXKm) {
+        return (consumoPromedio * costoCombustible) + (distanciaTotal * costoXKm);
     }
 
-    //Hay que ver que mas hacer aca porque sino seria siempre el mismo costo
-
-    public Double calcularCostoReal(Double consumoPromedio, Double distanciaReal){
-        return (consumoPromedio * costoCombustible) + distanciaReal ;
-    }
 
 
     // La fecha inicioEstimada seria
@@ -151,18 +150,15 @@ public class TramoService {
                 .toList();
     }
 
-    public TramoDTO asignarFechaInicioReal(Long idTramo, LocalDateTime fechaInicioReal) {
+    public TramoDTO asignarFechaInicioReal(Long idTramo) {
         Tramo tramo = findById(idTramo);
 
         if (tramo.getFechaHoraInicioReal() != null) {
             throw BaseException.badRequest("El tramo ya tiene una fecha de inicio real asignada.");
         }
-        if (fechaInicioReal.isBefore(LocalDateTime.now())) {
-            throw BaseException.badRequest("La fecha no puede ser anterior a la actual");
-        }
 
         // Asigna la fecha real de inicio y cambia el estado
-        tramo.setFechaHoraInicioReal(fechaInicioReal);
+        tramo.setFechaHoraInicioReal(LocalDateTime.now());
         tramo.setEstadoTramo(EstadoTramo.INICIADO);
 
         Tramo tramoActualizado = tramoRepository.save(tramo);
@@ -170,7 +166,11 @@ public class TramoService {
         return TramoMapper.toDTO(tramoActualizado);
     }
 
-    public TramoDTO asignarFechaFinReal(Long idTramo, LocalDateTime fechaFinReal) {
+    public CamionDTO obtenerCamionPorPatente(String patente) {
+        return camionesApiClient.obtenerCamionPorPatente(patente);
+    }
+
+    public TramoDTO asignarFechaFinReal(Long idTramo) {
         Tramo tramo = findById(idTramo);
 
         if (tramo.getFechaHoraFinReal() != null) {
@@ -181,16 +181,23 @@ public class TramoService {
             throw BaseException.badRequest("No se puede asignar una fecha de fin " +
                     "si no esta asignada la fecha de inico");
         }
-        if (fechaFinReal.isBefore(LocalDateTime.now())){
-            throw BaseException.badRequest("La fecha no puede ser anterior a la actual");
-        }
-        tramo.setFechaHoraFinReal(fechaFinReal);
+
+        tramo.setFechaHoraFinReal(LocalDateTime.now());
+        CamionDTO camion = obtenerCamionPorPatente(tramo.getPatenteCamion());
+        Double distanciaPorAhora = 24000.0;
+
+        tramo.setCostoReal(
+                calcularCostoReal(camion.getConsumoPromedio(), distanciaPorAhora, camion.getTarifa().getCostoXKilometro())
+        );
         tramo.setEstadoTramo(EstadoTramo.FINALIZADO);
 
         Tramo tramoActualizado = tramoRepository.save(tramo);
         return TramoMapper.toDTO(tramoActualizado);
     }
 
+    public Double calcularCostoReal(Double consumoPromedio, Double distanciaReal, Double costoXKm){
+        return (consumoPromedio * costoCombustible) + (distanciaReal * costoXKm);
+    }
 
     public HojaDeRutaDTO getHojaDeRuta(Long idTraslado) {
         List<Tramo> tramos = tramoRepository.findByIdTrasladoOrderByIdTramoAsc(idTraslado);

@@ -70,19 +70,17 @@ public class TramoController {
 
     @PutMapping("/{id}/inicio-real")
     public ResponseEntity<TramoDTO> asignarFechaInicioReal(
-            @PathVariable("id") Long idTramo,
-            @RequestParam LocalDateTime fechaInicioReal) {
+            @PathVariable("id") Long idTramo) {
 
-        TramoDTO tramoActualizado = tramoService.asignarFechaInicioReal(idTramo, fechaInicioReal);
+        TramoDTO tramoActualizado = tramoService.asignarFechaInicioReal(idTramo);
         return ResponseEntity.ok(tramoActualizado);
     }
 
     @PutMapping("/{id}/fin-real")
     public ResponseEntity<TramoDTO> asignarFechaFinReal(
-            @PathVariable("id") Long idTramo,
-            @RequestParam("fechaFinReal") LocalDateTime fechaFinReal) {
+            @PathVariable("id") Long idTramo) {
 
-        TramoDTO dto = tramoService.asignarFechaFinReal(idTramo, fechaFinReal);
+        TramoDTO dto = tramoService.asignarFechaFinReal(idTramo);
         return ResponseEntity.ok(dto);
     }
 
