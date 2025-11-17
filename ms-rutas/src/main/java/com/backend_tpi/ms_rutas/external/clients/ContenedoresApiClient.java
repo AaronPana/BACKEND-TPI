@@ -33,8 +33,8 @@ public class ContenedoresApiClient {
                 .body(CostoEstadiaDTO.class);
     }*/
 
-    public CostoEstadiaDTO crearEstadia(Long idContenedor, Long idTraslado, Long idDeposito, LocalDateTime fechaInicio){
-        return contenedoresRestClient.post()
+    public void crearEstadia(Long idContenedor, Long idTraslado, Long idDeposito, LocalDateTime fechaInicio){
+        contenedoresRestClient.post()
                 .uri("/estadias/", idDeposito, idContenedor, idTraslado, fechaInicio)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
@@ -43,7 +43,7 @@ public class ContenedoresApiClient {
                 .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
                     throw BaseException.internalError("Error al obtener costo estimado de estadía");
                 })
-                .body(CostoEstadiaDTO.class);
+                .toBodilessEntity();;
     }
 
 
