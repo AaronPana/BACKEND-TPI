@@ -1,15 +1,19 @@
 package com.backend_tpi.ms_contenedores.controllers;
 
+import java.net.URI;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.backend_tpi.ms_contenedores.dtos.CostoEstadiaEstimadaDTO;
 import com.backend_tpi.ms_contenedores.dtos.CostoEstadiaRealDTO;
+import com.backend_tpi.ms_contenedores.dtos.EstadiaRequestDTO;
 import com.backend_tpi.ms_contenedores.models.Estadias;
 import com.backend_tpi.ms_contenedores.services.EstadiaService;
 
@@ -51,5 +55,12 @@ public class EstadiaController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(dto);
+    }
+
+    @PostMapping
+    public ResponseEntity<Estadias> crearEstadia(@RequestBody EstadiaRequestDTO request) {
+        Estadias creada = estadiaService.crearEstadia(request);
+        URI location = URI.create("/estadias/" + creada.getIdEstadia());
+        return ResponseEntity.created(location).body(creada);
     }
 }

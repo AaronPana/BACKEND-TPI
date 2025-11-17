@@ -94,5 +94,5 @@ public class ContenedorService {
         contenedor.setLongitud(coordenadas.getLongitud());
 
         contenedorRepository.save(contenedor);
-    }
+    }    
 }
