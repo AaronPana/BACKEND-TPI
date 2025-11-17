@@ -18,4 +18,5 @@ public class TramoRequestDTO {
     private Double volumenContenedor;
     private Long idDepositoOrigen;
     private Long idDepositoDestino;
+    private Long idContenedor;
 }

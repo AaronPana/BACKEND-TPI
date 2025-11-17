@@ -57,4 +57,17 @@ public class CamionesApiClient {
                 .body(TransportitaDTO.class);
     }
 
+    public CamionDTO obtenerCamionPorPatente(String patente) {
+        return camionesRestClient.get()
+                .uri("/camiones/{patente}", patente)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                    throw BaseException.notFound("Camion no encontrado con patente " + patente);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw BaseException.internalError("Error al consultar camion con patente " + patente);
+                })
+                .body(CamionDTO.class);
+    }
+
 }

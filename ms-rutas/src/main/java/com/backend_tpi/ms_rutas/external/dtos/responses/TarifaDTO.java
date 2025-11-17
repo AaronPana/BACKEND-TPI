@@ -7,13 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CamionDTO {
-    private String patente;
-    private Double capacidadPeso;
-    private Double capacidadVolumen;
-    private Double consumoPromedio;
-    private String estaDisponible;
+public class TarifaDTO {
+    private Long idTarifa;
+    private String concepto;
     private Double costoXKilometro;
-    private TarifaDTO tarifa;
 }
-
