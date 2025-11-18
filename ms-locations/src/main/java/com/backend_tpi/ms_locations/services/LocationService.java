@@ -2,10 +2,12 @@ package com.backend_tpi.ms_locations.services;
 
 import com.backend_tpi.ms_locations.dtos.responses.DepositoDtoRes;
 import com.backend_tpi.ms_locations.dtos.responses.RutaAlternativaDtoRes;
+import com.backend_tpi.ms_locations.external.clients.ContenedoresApiClient;
 import com.backend_tpi.ms_locations.external.dtos.responses.RutaOsrmDtoRes;
 import com.backend_tpi.ms_locations.dtos.requests.RutaDtoReq;
 import com.backend_tpi.ms_locations.dtos.responses.RutaDtoRes;
 import com.backend_tpi.ms_locations.external.clients.OsrmApiClient;
+import com.backend_tpi.ms_locations.mappers.DepositoMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,16 +19,20 @@ import java.util.stream.Collectors;
 public class LocationService {
 
   private final OsrmApiClient osrmApiClient;
+  private final ContenedoresApiClient contenedoresApiClient;
   private final CacheRutaService cacheRutaService;
+  private final DepositoMapper depositoMapper;
 
-  // Simulación de depósitos en Argentina (deberías obtenerlos de tu BD)
-  private final List<DepositoDtoRes> depositosHabiles = Arrays.asList(
-      new DepositoDtoRes(1L, "Depósito Rosario", -32.9442, -60.6505, 0D),
-      new DepositoDtoRes(2L, "Depósito Villa María", -32.4072, -63.2409, 0D),
-      new DepositoDtoRes(3L, "Depósito Río Cuarto", -33.1301, -64.3499, 0D),
-      new DepositoDtoRes(4L, "Depósito San Francisco", -31.4281, -62.0827, 0D),
-      new DepositoDtoRes(5L, "Depósito Bell Ville", -32.6255, -62.6889, 0D)
-  );
+  // Simulación de depósitos en Argentina
+//  private final List<DepositoDtoRes> depositosHabiles = Arrays.asList(
+//      new DepositoDtoRes(1L, "Depósito Rosario", -32.9442, -60.6505, 0D),
+//      new DepositoDtoRes(2L, "Depósito Villa María", -32.4072, -63.2409, 0D),
+//      new DepositoDtoRes(3L, "Depósito Río Cuarto", -33.1301, -64.3499, 0D),
+//      new DepositoDtoRes(4L, "Depósito San Francisco", -31.4281, -62.0827, 0D),
+//      new DepositoDtoRes(5L, "Depósito Bell Ville", -32.6255, -62.6889, 0D)
+//  );
+
+  private List<DepositoDtoRes> depositosHabiles;
 
   public RutaOsrmDtoRes getRutaDirecta(double latitudOrigen, double longitudOrigen,
                                        double latitudDestino, double longitudDestino
@@ -35,13 +41,17 @@ public class LocationService {
   }
 
   public RutaDtoRes getRutasAlternativas(RutaDtoReq rutaDtoReq) {
+    this.depositosHabiles = this.contenedoresApiClient.getAllDepositos().stream()
+        .map(depositoMapper::alternativoToDepositoDtoRes)
+        .toList();
+
     RutaOsrmDtoRes rutaDirecta = this.osrmApiClient.calcularRuta(
         rutaDtoReq.getLongitudOrigen(), rutaDtoReq.getLatitudOrigen(), rutaDtoReq.getLongitudDestino(), rutaDtoReq.getLatitudDestino()
     );
 
     RutaAlternativaDtoRes alternativaDirecta = new RutaAlternativaDtoRes(
         "direct",
-        Arrays.asList("A", "B"),
+        Arrays.asList("Origen", "Destino"),
         rutaDirecta.getRoutes().getFirst().getDistance(),
         rutaDirecta.getRoutes().getFirst().getDuration(),
         Collections.emptyList()
@@ -96,6 +106,7 @@ public class LocationService {
               deposito.getNombre(),
               deposito.getLatitud(),
               deposito.getLongitud(),
+              deposito.getDireccion(),
               distancia
           );
 
@@ -183,12 +194,12 @@ public class LocationService {
 
     // Construir path como ["A", "D1", "D2", "B"]
     List<String> path = new ArrayList<>();
-    path.add("A");
+    path.add("Origen");
     depositos.forEach(deposito -> path.add(deposito.getNombre()));
-    path.add("B");
+    path.add("Destino");
 
     return new RutaAlternativaDtoRes(
-        "alt-" + idAlternativa,
+        String.valueOf(idAlternativa),
         path,
         rutaOsrmDto.getRoutes().getFirst().getDistance(),
         rutaOsrmDto.getRoutes().getFirst().getDuration(),

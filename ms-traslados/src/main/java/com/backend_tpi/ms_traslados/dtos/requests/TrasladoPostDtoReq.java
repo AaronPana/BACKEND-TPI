@@ -1,6 +1,5 @@
 package com.backend_tpi.ms_traslados.dtos.requests;
 
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -28,4 +27,12 @@ public class TrasladoPostDtoReq {
 
   @NotNull(message = "Se debe proporcionar un id de ciudad")
   private Long idCiudadDestino;
+
+  @NotNull(message = "Debe enviarse el peso")
+  @DecimalMin(value = "0.0", inclusive = false, message = "El peso debe ser mayor a 0")
+  private Double peso;
+
+  @NotNull(message = "Debe enviarse el volumen")
+  @DecimalMin(value = "0.0", inclusive = false, message = "El volumen debe ser mayor a 0")
+  private Double volumen;
 }

@@ -38,4 +38,3 @@ Thumbs.db
 
 # OSRM
 osrm-data/
-docker-compose.osrm.yml
