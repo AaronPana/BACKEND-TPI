@@ -2,6 +2,7 @@ package com.backend_tpi.ms_rutas.external.clients;
 
 import com.backend_tpi.ms_rutas.exceptions.BaseException;
 import com.backend_tpi.ms_rutas.external.dtos.responses.CamionDTO;
+import com.backend_tpi.ms_rutas.external.dtos.responses.CoordenadaDTO;
 import com.backend_tpi.ms_rutas.external.dtos.responses.TransportitaDTO;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatusCode;
@@ -69,5 +70,20 @@ public class CamionesApiClient {
                 })
                 .body(CamionDTO.class);
     }
+
+    public CoordenadaDTO obtenerCoordenadasCiudades(Long idCiudad ) {
+        return camionesRestClient.get()
+                .uri("/ciudades/{idCiudad}", idCiudad)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                    throw BaseException.notFound("Ciudad no encontrada con id" + idCiudad);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw BaseException.internalError("Error al consultar ciudad con id" + idCiudad);
+                })
+                .body(CoordenadaDTO.class);
+    }
+
+
 
 }

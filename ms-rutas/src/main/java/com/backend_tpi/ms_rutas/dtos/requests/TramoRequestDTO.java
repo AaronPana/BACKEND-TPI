@@ -8,15 +8,18 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TramoRequestDTO {
-    private String direccionOrigen;
-    private Long idCiudadOrigen;
-    private String direccionDestino;
-    private Long idCiudadDestino;
     private Long idTraslado;
-    private Long legajoTransportista;
+    private String idConsulta;   // opcional: si ya existe (cuando viene selección)
+    private String idRuta;       // opcional: si ya existe (cuando viene selección)
+
+    private Long idCiudadOrigen;
+    private Long idCiudadDestino;
+
+    private String direccionOrigen;  // provistas por ms-traslados (strings)
+    private String direccionDestino;
+
     private Double pesoContenedor;
     private Double volumenContenedor;
-    private Long idDepositoOrigen;
-    private Long idDepositoDestino;
     private Long idContenedor;
+    private Integer maximosDepositos = 3; // al generar alternativas
 }

@@ -21,6 +21,7 @@ public class TramoDTO {
     private String estadoTramo;
     private String tipoTramo;
     private String patenteCamion;
+    private String legajoTransportista;
     private Long idTraslado;
 }
 

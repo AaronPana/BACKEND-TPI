@@ -23,5 +23,9 @@ public class RestClientConfig {
         return RestClient.builder().baseUrl(baseUrl).build();
     }
 
+    @Bean("locationsRestClient")
+    RestClient LocationsRestClient(@Value("${api.ms_locations.base_url}") String baseUrl) {
+        return RestClient.builder().baseUrl(baseUrl).build();
+    }
 
 }
