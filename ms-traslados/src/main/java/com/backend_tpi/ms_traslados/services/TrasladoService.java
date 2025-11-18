@@ -7,6 +7,7 @@ import com.backend_tpi.ms_traslados.dtos.responses.TrasladoMetricasDtoRes;
 import com.backend_tpi.ms_traslados.dtos.responses.TrasladoResumenDtoRes;
 import com.backend_tpi.ms_traslados.exceptions.BaseException;
 import com.backend_tpi.ms_traslados.external.clients.ContenedoresApiClient;
+import com.backend_tpi.ms_traslados.external.dtos.requests.PesoVolumenDtoReq;
 import com.backend_tpi.ms_traslados.external.dtos.responses.ContenedorDtoRes;
 import com.backend_tpi.ms_traslados.mappers.TrasladoMapper;
 import com.backend_tpi.ms_traslados.models.Cliente;
@@ -33,10 +34,14 @@ public class TrasladoService {
         .orElseThrow(() -> BaseException.notFoundById("Cliente", trasladoPostDtoReq.getNroDocumento()));
 
     // NO SE ESTAN VALIDANDO LOS IDS DE CIDUDAES
-    // NO SE OBTIENE REALMENTE UN ID_CONTENEDOR
-    Long idContenedor = (Long) this.contenedoresApiClient.postContenedor();
 
-    Traslado traslado = this.trasladoMapper.postDtoReqToTraslado(trasladoPostDtoReq, cliente, idContenedor);
+    PesoVolumenDtoReq pesoVolumenDtoReq = new PesoVolumenDtoReq(
+        trasladoPostDtoReq.getPeso(),
+        trasladoPostDtoReq.getVolumen()
+    );
+    ContenedorDtoRes contenedorDtoRes = this.contenedoresApiClient.postContenedor(pesoVolumenDtoReq);
+
+    Traslado traslado = this.trasladoMapper.postDtoReqToTraslado(trasladoPostDtoReq, cliente, contenedorDtoRes.getIdContenedor());
 
     this.trasladoRepository.save(traslado);
 

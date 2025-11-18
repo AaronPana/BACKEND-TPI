@@ -2,7 +2,7 @@ package com.backend_tpi.ms_locations.services;
 
 import com.backend_tpi.ms_locations.dtos.responses.RutaAlternativaDtoRes;
 import com.backend_tpi.ms_locations.dtos.responses.RutaDtoRes;
-import lombok.AllArgsConstructor;
+import com.backend_tpi.ms_locations.exceptions.BaseException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -20,36 +20,41 @@ public class CacheRutaService {
   private static final long CACHE_TTL_MINUTES = 30;
 
   public String getNextIdConsulta() {
-    return "rutas-" + this.contadorIdConsultas.getAndIncrement();
+    return String.valueOf(this.contadorIdConsultas.getAndIncrement());
   }
 
-  public void storeRouteQuery(String consultaId, RutaDtoRes response) {
+  public void storeRouteQuery(String idConsulta, RutaDtoRes response) {
     CachedRouteQuery cached = new CachedRouteQuery(response, LocalDateTime.now());
-    cache.put(consultaId, cached);
+    cache.put(idConsulta, cached);
 
     cleanExpiredEntries();
   }
 
-  public Optional<RutaAlternativaDtoRes> getSpecificRoute(String consultaId, String routeId) {
-    CachedRouteQuery cached = cache.get(consultaId);
+  public Optional<RutaAlternativaDtoRes> getSpecificRoute(String idConsulta, String idRuta) {
+    CachedRouteQuery cached = cache.get(idConsulta);
+
+    if (cached == null) throw BaseException.notFoundById("Consulta", idConsulta);
 
     RutaDtoRes response = cached.response();
 
-    if (response.getRutaDirecta().getIdRuta().equals(routeId)) {
+    if (response.getRutaDirecta().getIdRuta().equals(idRuta)) {
       return Optional.of(response.getRutaDirecta());
     }
 
-    return response.getRutasAlternativas().stream()
-        .filter(route -> route.getIdRuta().equals(routeId))
-        .findFirst();
+    return Optional.ofNullable(response.getRutasAlternativas().stream()
+        .filter(route -> route.getIdRuta().equals(idRuta))
+        .findFirst()
+        .orElseThrow(
+            () -> BaseException.notFoundById("Alternativa", idRuta)
+        ));
   }
 
-  public Optional<RutaDtoRes> getFullQuery(String consultaId) {
-    CachedRouteQuery cached = cache.get(consultaId);
+  public Optional<RutaDtoRes> getFullQuery(String idConsulta) {
+    CachedRouteQuery cached = cache.get(idConsulta);
 
     if (cached == null || cached.isExpired()) {
-      cache.remove(consultaId);
-      return Optional.empty();
+      cache.remove(idConsulta);
+      throw BaseException.notFoundById("Consulta", idConsulta);
     }
 
     return Optional.of(cached.response());

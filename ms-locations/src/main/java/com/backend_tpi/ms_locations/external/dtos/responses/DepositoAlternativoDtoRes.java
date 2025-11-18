@@ -1,4 +1,4 @@
-package com.backend_tpi.ms_locations.dtos.responses;
+package com.backend_tpi.ms_locations.external.dtos.responses;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,12 +7,13 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class DepositoDtoRes {
+public class DepositoAlternativoDtoRes {
 
   private Long idDeposito;
   private String nombre;
+  private Double costoXdia;
   private Double latitud;
   private Double longitud;
   private String direccion;
-  private Double distanciaDesdePuntoMedioRuta; // distancia desde el punto medio de la ruta
+  private Long idCiudad;
 }
