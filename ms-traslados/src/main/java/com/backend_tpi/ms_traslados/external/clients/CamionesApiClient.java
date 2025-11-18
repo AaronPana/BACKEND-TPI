@@ -23,7 +23,7 @@ public class  CamionesApiClient {
 
   public CiudadProvinciaDtoRes getCiudadProvincia(Long idCiudad) {
     return this.camionesRestClient.get()
-        .uri("/api/ciudades/{idCiudad}", idCiudad)
+        .uri("/ciudades/{idCiudad}/descripcion", idCiudad)
         .retrieve() // Acá es donde realmente se ejecuta la petición (IMPORTANTE)
         .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> {
           int status = response.getStatusCode().value();

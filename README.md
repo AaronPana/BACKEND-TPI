@@ -122,6 +122,9 @@ api.ms-traslados.base_url=http://localhost:8084
 # De ser necesario
 api.ms-locations.base_url=http://localhost:8085
 
+# Para el microservicio: ms-rutas
+costoCombustible=1500
+
 
 # ========================================
 # BASE DE DATOS H2 (en memoria)
@@ -181,14 +184,14 @@ spring.web.resources.add-mappings=false
 
 # 🗺️ Configuración y Uso de OSRM
 
-### Descarga
+### 📉 Descarga
 
 Crear la carpeta `osrm-data` en la raiz del proyecto. \
 Descargar archivo desde https://download.geofabrik.de/south-america.html en esa carpeta.
 
 Ejemplo: `argentina-251115.osm.pbf`
 
-### Archivo "docker-compose.osrm.yml"
+### 📑 Archivo "docker-compose.osrm.yml"
 
 Modificar el siguiente apartado para que coincida con la versión correspondiente
 ``` yml
@@ -374,7 +377,7 @@ git reset --hard  # Descarta TODOS los cambios
 
 ------------------------------------------------------------------------
 
-# 🧱 Tecnologías
+# 📱 Tecnologías
 
 -   Java 21
 -   Spring Boot 3.5.6
@@ -395,15 +398,15 @@ git reset --hard  # Descarta TODOS los cambios
 ------------------------------------------------------------------------
 
 # 🔗 Enlaces de Documentación por Tecnología
-💛 Java 21
+🧡 Java 21
 https://docs.oracle.com/en/java/javase/21/ \
 🌱 Spring Boot 3.5.6
 https://docs.spring.io/spring-boot/docs/current/reference/html/ \
-🔧 Maven
+⚙️ Maven
 https://maven.apache.org/guides/index.html \
-🟦 H2 Database
+🛢️H2 Database
 https://www.h2database.com/html/main.html \
-🟫 JPA / Hibernate \
+JPA / Hibernate \
 JPA (Jakarta Persistence):
 https://jakarta.ee/specifications/persistence/ \
 Hibernate ORM:
