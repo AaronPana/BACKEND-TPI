@@ -5,7 +5,10 @@ import com.backend_tpi.ms_rutas.dtos.requests.TramoRequestDTO;
 import com.backend_tpi.ms_rutas.dtos.responses.HojaDeRutaDTO;
 import com.backend_tpi.ms_rutas.dtos.responses.TramoDTO;
 import com.backend_tpi.ms_rutas.external.clients.CamionesApiClient;
+import com.backend_tpi.ms_rutas.external.clients.LocationsApiClient;
 import com.backend_tpi.ms_rutas.external.dtos.responses.CamionDTO;
+import com.backend_tpi.ms_rutas.external.dtos.responses.CoordenadaDTO;
+import com.backend_tpi.ms_rutas.external.dtos.responses.RutaDtoRes;
 import com.backend_tpi.ms_rutas.models.Tramo;
 import com.backend_tpi.ms_rutas.services.TramoService;
 import org.springframework.http.HttpStatus;
@@ -21,18 +24,21 @@ import java.util.Map;
 @RequestMapping("api/tramos")
 public class TramoController {
     private TramoService tramoService;
-    private CamionesApiClient camionesApiClient;
 
-    TramoController(TramoService tramoService, CamionesApiClient camionesApiClient) {
-
+    TramoController(TramoService tramoService) {
         this.tramoService = tramoService;
-        this.camionesApiClient = camionesApiClient;
     }
 
     @GetMapping
     public ResponseEntity<List<Tramo>> getTramo() {
         List<Tramo> ListaTramos = tramoService.findAll();
         return ResponseEntity.ok(ListaTramos);
+    }
+
+    @PostMapping("/alternativas")
+    public ResponseEntity<RutaDtoRes> generarAlternativas(@RequestBody TramoRequestDTO dto) {
+        RutaDtoRes res = tramoService.generarAlternativasDesdeTraslado(dto);
+        return ResponseEntity.ok(res);
     }
 
     @GetMapping("/{id}")
@@ -42,9 +48,15 @@ public class TramoController {
     }
 
     @PostMapping
-    public ResponseEntity<Tramo> create(@RequestBody TramoRequestDTO tramo) {
-        Tramo creado = tramoService.create(tramo);
-        return ResponseEntity.status(HttpStatus.CREATED).body(creado);
+    public ResponseEntity<List<TramoDTO>> crearTramosDesdeRuta(@RequestBody TramoRequestDTO dto) {
+        List<TramoDTO> tramos = tramoService.create(dto);
+        return ResponseEntity.ok(tramos);
+    }
+
+    @GetMapping("ciudad/{id}")
+    public ResponseEntity<CoordenadaDTO> getCiudades(@PathVariable Long id) {
+        CoordenadaDTO coordenadasCiudad = tramoService.buscarCoordenada(id);
+        return ResponseEntity.ok(coordenadasCiudad);
     }
 
     @DeleteMapping("/{id}")
